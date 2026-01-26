@@ -1,0 +1,146 @@
+[
+    {
+        "id": "q1",
+        "category": "quran",
+        "question": "How many Surahs are there in the Quran?",
+        "options": [
+            "110",
+            "112",
+            "114",
+            "116"
+        ],
+        "correctAnswerIndex": 2
+    },
+    {
+        "id": "q2",
+        "category": "quran",
+        "question": "Which is the longest Surah in the Quran?",
+        "options": [
+            "Al-Imran",
+            "Al-Baqarah",
+            "An-Nisa",
+            "Al-Ma'idah"
+        ],
+        "correctAnswerIndex": 1
+    },
+    {
+        "id": "q3",
+        "category": "quran",
+        "question": "What is the first Surah revealed?",
+        "options": [
+            "Al-Fatiha",
+            "Al-Alaq",
+            "Al-Muddathir",
+            "Al-Baqarah"
+        ],
+        "correctAnswerIndex": 1
+    },
+    {
+        "id": "q4",
+        "category": "prophets",
+        "question": "Who was the first Prophet in Islam?",
+        "options": [
+            "Nuh (AS)",
+            "Ibrahim (AS)",
+            "Adam (AS)",
+            "Musa (AS)"
+        ],
+        "correctAnswerIndex": 2
+    },
+    {
+        "id": "q5",
+        "category": "prophets",
+        "question": "Which Prophet was swallowed by a whale?",
+        "options": [
+            "Musa (AS)",
+            "Yusuf (AS)",
+            "Yunus (AS)",
+            "Isa (AS)"
+        ],
+        "correctAnswerIndex": 2
+    },
+    {
+        "id": "q6",
+        "category": "hadith",
+        "question": "What is the most authentic book of Hadith?",
+        "options": [
+            "Sahih Muslim",
+            "Sunan Abu Dawood",
+            "Sahih Al-Bukhari",
+            "Jami At-Tirmidhi"
+        ],
+        "correctAnswerIndex": 2
+    },
+    {
+        "id": "q7",
+        "category": "salah",
+        "question": "How many obligatory prayers are there in a day?",
+        "options": [
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "correctAnswerIndex": 2
+    },
+    {
+        "id": "q8",
+        "category": "hajj",
+        "question": "In which city is Hajj performed?",
+        "options": [
+            "Madinah",
+            "Jerusalem",
+            "Makkah",
+            "Riyadh"
+        ],
+        "correctAnswerIndex": 2
+    },
+    {
+        "id": "q9",
+        "category": "zakat",
+        "question": "What is the percentage of Zakat required on wealth?",
+        "options": [
+            "2.0%",
+            "2.5%",
+            "3.0%",
+            "10%"
+        ],
+        "correctAnswerIndex": 1
+    },
+    {
+        "id": "q10",
+        "category": "names",
+        "question": "How many Names of Allah are famously known?",
+        "options": [
+            "99",
+            "100",
+            "90",
+            "110"
+        ],
+        "correctAnswerIndex": 0
+    },
+    {
+        "id": "q11",
+        "category": "quran",
+        "question": "Which Surah is known as the Heart of the Quran?",
+        "options": [
+            "Al-Mulk",
+            "Yasin",
+            "Ar-Rahman",
+            "Al-Waqi'a"
+        ],
+        "correctAnswerIndex": 1
+    },
+    {
+        "id": "q12",
+        "category": "quran",
+        "question": "Which Surah does not start with Bismillah?",
+        "options": [
+            "At-Tawbah",
+            "Yunus",
+            "Hud",
+            "Yusuf"
+        ],
+        "correctAnswerIndex": 0
+    }
+]
