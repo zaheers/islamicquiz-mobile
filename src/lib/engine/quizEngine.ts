@@ -1,4 +1,4 @@
-import { QUIZ_CONFIG } from "../config";
+import { QUIZ_CONFIG } from "../config/quizConfig";
 import { Question } from "../types";
 
 // Web Logic: "arr.sort(() => Math.random() - 0.5)"

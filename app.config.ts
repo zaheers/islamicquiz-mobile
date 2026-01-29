@@ -3,16 +3,16 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 export default ({ config }: ConfigContext): ExpoConfig => {
     return {
         ...config,
-        name: "islamicquiz-mobile",
+        name: "Islamic Quiz",
         slug: "islamicquiz-mobile",
         version: "1.0.0",
         orientation: "portrait",
-        icon: "./assets/images/icon.png",
+        icon: "./assets/branding/logo.png",
         scheme: "islamicquiz",
         userInterfaceStyle: "automatic",
         newArchEnabled: true,
         splash: {
-            image: "./assets/images/splash-icon.png",
+            image: "./assets/branding/logo.png",
             resizeMode: "contain",
             backgroundColor: "#ffffff"
         },
@@ -21,10 +21,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         },
         android: {
             adaptiveIcon: {
-                foregroundImage: "./assets/images/adaptive-icon.png",
+                foregroundImage: "./assets/branding/logo.png",
                 backgroundColor: "#ffffff"
             },
-            package: "com.islamicquiz.mobile"
+            package: "com.zaheerai.islamicquiz"
         },
         web: {
             bundler: "metro",
@@ -44,6 +44,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             firebaseStorageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
             firebaseMessagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
             firebaseAppId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+            website: "https://www.islamicquiz.app/",
+            developerWebsite: "https://www.zaheerai.com/"
         }
     };
 };

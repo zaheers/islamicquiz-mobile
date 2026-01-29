@@ -5,26 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6c0dc22-08aa-472f-bc2c-d557b1b303c9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/adaptive-icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/favicon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/splash-icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/questions.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/navigation/RootNavigator.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/HomeScreen.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/QuizScreen.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/ResultScreen.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/dataSource.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/theme/theme.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/quiz/[id]/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/quiz/[id]/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/quiz/QuestionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/quiz/QuestionCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/engine/quizEngine.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/engine/quizEngine.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/firebase.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/firebase.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/quizStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/quizStore.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

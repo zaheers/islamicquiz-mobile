@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { QUIZ_CONFIG } from '@/lib/config';
+import { QUIZ_CONFIG } from '@/lib/config/quizConfig';
 import { categories } from '@/lib/mockData';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
@@ -17,7 +17,7 @@ export default function QuizStartScreen() {
 
     const selectedCategory = categories.find(c => c.slug === id);
     const questionCount = QUIZ_CONFIG.DEFAULT_QUESTION_COUNT;
-    const timePerQuestion = QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION / 60; // Minutes for display (approx)
+    const timePerQuestion = QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION_SEC / 60; // Minutes for display (approx)
 
     if (!selectedCategory) {
         return (

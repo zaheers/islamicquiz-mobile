@@ -1,4 +1,4 @@
-import { QUIZ_CONFIG } from '@/lib/config';
+import { QUIZ_CONFIG } from '@/lib/config/quizConfig';
 import { selectQuestionsForQuiz } from '@/lib/engine/quizEngine';
 import { fetchQuestionsByCategory } from '@/lib/repositories/quizRepo';
 import { Question } from '@/lib/types';
@@ -27,7 +27,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     currentQuestionIndex: 0,
     score: 0,
     status: 'idle',
-    timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION,
+    timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION_SEC,
     selectedOption: null,
     answers: [],
 
@@ -50,7 +50,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
                 status: 'active',
                 currentQuestionIndex: 0,
                 score: 0,
-                timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION,
+                timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION_SEC,
             });
         } catch (error) {
             console.error(error);
@@ -104,7 +104,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
             set({
                 currentQuestionIndex: nextIndex,
                 selectedOption: null,
-                timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION,
+                timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION_SEC,
             });
         }
     },
@@ -148,7 +148,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
             questions: [],
             currentQuestionIndex: 0,
             score: 0,
-            timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION,
+            timer: QUIZ_CONFIG.DEFAULT_TIME_PER_QUESTION_SEC,
             selectedOption: null,
             answers: []
         });

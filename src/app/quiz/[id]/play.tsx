@@ -8,12 +8,17 @@ import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function QuizPlayScreen() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
+
+    // Layout and Safe Area State
+    const insets = useSafeAreaInsets();
+    const [footerHeight, setFooterHeight] = useState(0);
 
     const {
         questions,
@@ -34,7 +39,7 @@ export default function QuizPlayScreen() {
         if (id) {
             startQuiz(id as string);
         }
-    }, [id]); // Missing startQuiz in dependency array to avoid loop if unstable ref
+    }, [id]);
 
     // Tick Timer
     useEffect(() => {
@@ -45,7 +50,7 @@ export default function QuizPlayScreen() {
             }, 1000);
         }
         return () => clearInterval(interval);
-    }, [status]); // Missing tickTimer
+    }, [status]);
 
     // Handle Completion
     useEffect(() => {
@@ -92,7 +97,9 @@ export default function QuizPlayScreen() {
     };
 
     return (
-        <ScreenContainer>
+        // Disable safe bottom here since we manual handle it in footer
+        <ScreenContainer safe={true}>
+            {/* Note: ScreenContainer safe=true acts on top/left/right by default based on its impl */}
             <Header
                 title={`Question ${currentQuestionIndex + 1}/${questions.length}`}
                 showBack
@@ -102,7 +109,12 @@ export default function QuizPlayScreen() {
                 <ProgressBar progress={progress} />
             </View>
 
-            <ScrollView contentContainerStyle={styles.content}>
+            <ScrollView
+                contentContainerStyle={[
+                    styles.content,
+                    { paddingBottom: footerHeight + spacing.l } // Add extra padding so content clears footer
+                ]}
+            >
                 <QuestionCard
                     question={currentQuestion}
                     selectedOption={selectedOption}
@@ -111,7 +123,13 @@ export default function QuizPlayScreen() {
                 />
             </ScrollView>
 
-            <View style={styles.footer}>
+            <View
+                style={[
+                    styles.footer,
+                    { paddingBottom: Math.max(insets.bottom, spacing.l) } // Respect safe area
+                ]}
+                onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
+            >
                 <Text style={styles.timer}>Time: {timer}s</Text>
 
                 <Button
@@ -136,7 +154,6 @@ const styles = StyleSheet.create({
     },
     content: {
         padding: spacing.l,
-        paddingBottom: 100,
     },
     footer: {
         position: 'absolute',

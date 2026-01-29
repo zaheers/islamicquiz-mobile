@@ -20,17 +20,49 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     onSelectOption,
     showResult = false
 }) => {
-    const getVariant = (option: string) => {
-        if (!selectedOption) return 'outline';
+
+    // We compute styles dynamically for strict "Green/Red" highlighting
+    const getOptionStyle = (option: string) => {
+        if (!selectedOption) return {}; // Default state
 
         if (showResult) {
-            if (option === question.answer) return 'primary'; // Correct
-            if (option === selectedOption && option !== question.answer) return 'secondary'; // Wrong selection
-            return 'outline';
+            // After Check:
+            if (option === question.answer) {
+                // Correct Answer -> Green highlight
+                return {
+                    borderColor: colors.success,
+                    backgroundColor: colors.success + '20', // Subtle green tint
+                    borderWidth: 2
+                };
+            }
+            if (option === selectedOption && option !== question.answer) {
+                // Selected Wrong -> Red highlight
+                return {
+                    borderColor: colors.error,
+                    backgroundColor: colors.error + '20', // Subtle red tint
+                    borderWidth: 2
+                };
+            }
+            // Other options -> Disabled look
+            return { opacity: 0.5 };
         }
 
-        return selectedOption === option ? 'primary' : 'outline';
+        // Before Check: Selected gets border highlight
+        if (selectedOption === option) {
+            return {
+                borderColor: colors.primary,
+                backgroundColor: colors.primary + '10',
+                borderWidth: 2
+            };
+        }
+
+        return {};
     };
+
+    // We can't easily change the 'variant' to mapped colors because Button uses fixed variants.
+    // Instead we use 'outline' as base and override with 'style'.
+    // BUT 'primary' variant in Button handles text color too.
+    // Let's use 'outline' variant to keep text visible (primary/black), and override backgrounds/borders.
 
     return (
         <View style={styles.container}>
@@ -43,10 +75,14 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     <Button
                         key={index}
                         title={option}
-                        variant={getVariant(option)}
+                        // Use outline to start, then override.
+                        variant="outline"
                         onPress={() => !showResult && onSelectOption(option)}
                         disabled={showResult}
-                        style={styles.optionButton}
+                        style={[
+                            styles.optionButton,
+                            getOptionStyle(option)
+                        ]}
                     />
                 ))}
             </View>
@@ -81,12 +117,12 @@ const styles = StyleSheet.create({
         gap: spacing.m,
     },
     optionButton: {
-        justifyContent: 'center', // override row for center text
-        borderWidth: 2,
+        justifyContent: 'center',
+        borderWidth: 1, // Default thin border
     },
     explanationCard: {
         marginTop: spacing.m,
-        backgroundColor: colors.primary + '10', // 10% opacity hex if simple append, else use rgba
+        backgroundColor: colors.primary + '10',
         borderColor: colors.primary,
         borderWidth: 1,
     },
