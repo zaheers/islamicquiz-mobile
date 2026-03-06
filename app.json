@@ -2,7 +2,7 @@
   "expo": {
     "name": "Al Noor",
     "slug": "islamicquiz-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/app-icon-1024.png",
     "scheme": "islamicquizmobile",
@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#0F2E2E",
         "foregroundImage": "./assets/app-icon-1024.png"
