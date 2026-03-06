@@ -43,6 +43,14 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "website": "https://www.islamicquiz.app/",
+      "developerWebsite": "https://www.zaheerai.com/",
+      "router": {},
+      "eas": {
+        "projectId": "d87e3223-ae84-4987-ab5d-7ad5a496f01d"
+      }
     }
   }
 }

@@ -43,7 +43,7 @@ export default function QuizPlayScreen() {
 
     // Tick Timer
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setTimeout>;
         if (status === 'active') {
             interval = setInterval(() => {
                 tickTimer();
@@ -57,7 +57,7 @@ export default function QuizPlayScreen() {
         if (status === 'completed') {
             const state = useQuizStore.getState();
             router.replace({
-                pathname: `/quiz/${id}/result`,
+                pathname: `/quiz/${id}/result` as any,
                 params: {
                     score: state.score,
                     total: state.questions.length
