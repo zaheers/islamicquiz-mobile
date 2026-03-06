@@ -1,7 +1,7 @@
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { categories } from '@/lib/mockData';
 import { quranService, Surah } from '@/services/quranService';
-import { HistoryEntry, storageService } from '@/services/storageService';
+import { storageService } from '@/services/storageService';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -24,9 +24,11 @@ export default function HomeScreen() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'Hifz' | 'Quiz' | 'AI'>('Hifz');
 
-    const [lastRead, setLastRead] = useState<HistoryEntry | null>(null);
+    const [lastReadSurah, setLastReadSurah] = useState<number | null>(null);
+    const [lastReadAyah, setLastReadAyah] = useState<number | null>(null);
+    const [lastReadSurahName, setLastReadSurahName] = useState<string | null>(null);
+
     const [allSurahs, setAllSurahs] = useState<Surah[]>([]);
-    const [totalMemorized, setTotalMemorized] = useState(0);
 
     useEffect(() => {
         const loadProgressData = async () => {
@@ -34,19 +36,13 @@ export default function HomeScreen() {
                 const surahs = await quranService.getSurahs();
                 setAllSurahs(surahs);
 
-                const history = await storageService.getHistory();
-                const lastReadEntry = history.length > 0 ? history[0] : null;
+                // Derive the Resume Reading metric exclusively from the single dedicated state payload, apart from History array 
+                const lastReadEntry = await storageService.getLastRead();
 
                 if (lastReadEntry && surahs.length > 0) {
-                    setLastRead(lastReadEntry);
-
-                    // Calculate macro progress by aggregating past surahs
-                    let memorizedCount = 0;
-                    for (let i = 0; i < lastReadEntry.surahNumber - 1; i++) {
-                        memorizedCount += surahs[i].numberOfAyahs;
-                    }
-                    memorizedCount += lastReadEntry.ayahNumber;
-                    setTotalMemorized(memorizedCount);
+                    setLastReadSurah(lastReadEntry.surahNumber);
+                    setLastReadAyah(lastReadEntry.ayahNumber);
+                    setLastReadSurahName(lastReadEntry.surahName);
                 }
             } catch (error) {
                 console.error('Failed to load progress data:', error);
@@ -140,34 +136,27 @@ export default function HomeScreen() {
                                 activeOpacity={0.9}
                             >
                                 <Text style={styles.progressSectionTitle}>Continue Reading</Text>
-                                <Text style={styles.surahNameTitle}>{lastRead?.surahName || 'Surah Al-Fatihah'}</Text>
+                                <Text style={styles.surahNameTitle}>{lastReadSurahName || 'Surah Al-Fatihah'}</Text>
                                 <Text style={styles.ayahProgressText}>
-                                    Ayah {lastRead?.ayahNumber || 0} of {allSurahs.length > 0 ? allSurahs[Math.max(0, (lastRead?.surahNumber || 1) - 1)]?.numberOfAyahs : 7}
+                                    Ayah {lastReadAyah || 0} of {allSurahs.length > 0 && lastReadSurah ? allSurahs[lastReadSurah - 1]?.numberOfAyahs : 7}
                                 </Text>
                                 <View style={styles.progressBarBg}>
                                     <View
                                         style={[
                                             styles.progressBarFill,
-                                            { width: `${lastRead && allSurahs.length > 0 ? Math.min(100, (lastRead.ayahNumber / (allSurahs[lastRead.surahNumber - 1]?.numberOfAyahs || 1)) * 100) : 0}%` }
+                                            { width: `${lastReadAyah && allSurahs.length > 0 && lastReadSurah ? Math.min(100, (lastReadAyah / (allSurahs[lastReadSurah - 1]?.numberOfAyahs || 1)) * 100) : 0}%` }
                                         ]}
                                     />
                                 </View>
                             </TouchableOpacity>
 
-                            {/* Quran Progress Card */}
+                            <View style={styles.divider} />
+
+                            {/* Reflection Card */}
                             <View style={styles.progressCard}>
-                                <Text style={styles.progressSectionTitle}>Quran Progress</Text>
-                                <Text style={styles.ayahProgressTextMacro}>
-                                    {totalMemorized} / 6236
-                                </Text>
-                                <View style={styles.progressBarBg}>
-                                    <View
-                                        style={[
-                                            styles.progressBarFill,
-                                            { width: `${Math.min(100, (totalMemorized / 6236) * 100)}%` }
-                                        ]}
-                                    />
-                                </View>
+                                <Text style={styles.progressSectionTitle}>Before Reciting the Quran</Text>
+                                <Text style={styles.arabicReflection}>اللهم افتح لي أبواب رحمتك</Text>
+                                <Text style={styles.translationReflection}>O Allah, open for me the doors of Your mercy.</Text>
                             </View>
                         </View>
                     )}
@@ -402,6 +391,26 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: '#059669',
         borderRadius: 3,
+    },
+    arabicReflection: {
+        fontSize: 24,
+        fontWeight: '600',
+        color: '#0f766e', // deeper teal
+        textAlign: 'right',
+        marginBottom: 8,
+        lineHeight: 38,
+    },
+    translationReflection: {
+        fontSize: 15,
+        color: '#57534e',
+        fontStyle: 'italic',
+        lineHeight: 22,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#EAEAEA',
+        marginHorizontal: 16,
+        marginBottom: 16,
     },
 
     // Quiz Category Section

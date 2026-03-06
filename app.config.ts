@@ -3,26 +3,26 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 export default ({ config }: ConfigContext): ExpoConfig => {
     return {
         ...config,
-        name: "Islamic Quiz",
+        name: "Al Noor",
         slug: "islamicquiz-mobile",
         version: "1.0.0",
         orientation: "portrait",
-        icon: "./assets/branding/logo.png",
+        icon: "./assets/app-icon-1024.png",
         scheme: "islamicquiz",
         userInterfaceStyle: "automatic",
         newArchEnabled: true,
         splash: {
-            image: "./assets/branding/logo.png",
+            image: "./assets/alnoor-logo.png",
             resizeMode: "contain",
-            backgroundColor: "#ffffff"
+            backgroundColor: "#0F2E2E"
         },
         ios: {
             supportsTablet: true
         },
         android: {
             adaptiveIcon: {
-                foregroundImage: "./assets/branding/logo.png",
-                backgroundColor: "#ffffff"
+                foregroundImage: "./assets/app-icon-1024.png",
+                backgroundColor: "#0F2E2E"
             },
             package: "com.zaheerai.islamicquiz"
         },
