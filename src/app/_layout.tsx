@@ -20,7 +20,11 @@ export default function RootLayout() {
                 // Fonts loaded, now ensure auth
                 await ensureAnonymousAuth();
                 setIsAuthReady(true);
-                SplashScreen.hideAsync();
+
+                // Add a small delay so the branding is visible
+                setTimeout(() => {
+                    SplashScreen.hideAsync();
+                }, 1500);
             }
         };
         initApp();
