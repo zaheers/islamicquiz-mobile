@@ -19,6 +19,17 @@ export const typography = {
         fontWeight: '400' as '400',
         lineHeight: 24,
     },
+    bodyBold: {
+        fontSize: 16,
+        fontWeight: '700' as '700',
+        lineHeight: 24,
+    },
+    label: {
+        fontSize: 12,
+        fontWeight: '700' as '700',
+        textTransform: 'uppercase' as 'uppercase',
+        letterSpacing: 1,
+    },
     caption: {
         fontSize: 14,
         fontWeight: '400' as '400',

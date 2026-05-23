@@ -12,6 +12,7 @@ export const colors = {
     text: '#1F2937', // Gray 800
     textSecondary: '#6B7280', // Gray 500
     textLight: '#F9FAFB', // Gray 50
+    textBody: '#374151', // Gray 700
 
     success: '#10B981',
     error: '#EF4444',

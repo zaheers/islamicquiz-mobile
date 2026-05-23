@@ -1,0 +1,17 @@
+.git
+.gitignore
+node_modules
+.expo
+.expo-shared
+.vscode
+.idea
+docs
+README.md
+scripts
+*.py
+temp*
+*.log
+build
+dist
+web-build
+quranjson

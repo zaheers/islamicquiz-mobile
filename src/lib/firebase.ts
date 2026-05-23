@@ -26,19 +26,14 @@ try {
         db = getFirestore(app);
 
         // Initialize Auth with persistence using AsyncStorage
-        // Check if auth is already initialized to avoid duplicate init errors if reloaded
-        try {
-            auth = getAuth(app);
-        } catch {
-            // If getAuth fails (e.g. not initialized), we initialize it
-            auth = initializeAuth(app, {
-                persistence: getReactNativePersistence(AsyncStorage)
-            });
-        }
+        const currentApp = getApps().length ? getApp() : initializeApp(config);
+        auth = initializeAuth(currentApp, {
+            persistence: getReactNativePersistence(AsyncStorage)
+        });
 
-        console.log("Firebase initialized successfully");
+        if (__DEV__) console.log("Firebase initialized successfully");
     } else {
-        console.warn("Firebase configuration missing. Check app.json/app.config.ts and .env");
+        if (__DEV__) console.warn("Firebase configuration missing.");
     }
 } catch (error) {
     console.error("Firebase initialization error:", error);

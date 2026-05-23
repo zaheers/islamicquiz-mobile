@@ -5,8 +5,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         ...config,
         name: "Al Noor",
         slug: "islamicquiz-mobile",
-        version: "1.0.0",
-        orientation: "portrait",
+        version: "3.0.2",
+        orientation: "default",
         icon: "./assets/app-icon-1024.png",
         scheme: "islamicquiz",
         userInterfaceStyle: "automatic",
@@ -17,23 +17,22 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             backgroundColor: "#0F2E2E"
         },
         ios: {
-            supportsTablet: true
+            supportsTablet: true,
+            bundleIdentifier: "com.zaheerai.islamicquiz"
         },
         android: {
             adaptiveIcon: {
                 foregroundImage: "./assets/app-icon-1024.png",
                 backgroundColor: "#0F2E2E"
             },
-            package: "com.zaheerai.islamicquiz"
+            package: "com.zaheerai.islamicquiz",
+            softwareKeyboardLayoutMode: "resize"
         },
         web: {
             bundler: "metro",
             output: "static",
             favicon: "./assets/images/favicon.png"
         },
-        plugins: [
-            "expo-router"
-        ],
         experiments: {
             typedRoutes: true
         },
