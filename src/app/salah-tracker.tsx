@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
+import { SpiritualCard } from '@/components/ui/SpiritualCard';
 import { colors } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 import { spacing } from '@/theme/spacing';
-import { Check, X, Minus, Flame, Trophy, Star, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Check, X, Minus, Star, ChevronDown, ChevronUp, Lock, Sun, Moon, Sparkles, Clock, CheckCircle2 } from 'lucide-react-native';
 import { auth } from '@/lib/firebase';
 import {
   salahRepository,
@@ -28,29 +30,6 @@ import { getLocalDayStr } from '@/features/dailyGoal/streakService';
 const { width } = Dimensions.get('window');
 
 const getUserId = () => auth?.currentUser?.uid || 'anonymous_user';
-
-const formatToday = (): string => {
-  const d = new Date();
-  return d.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
-const formatDateShort = (dateStr: string): string => {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-};
-
-// Colors per prayer for visual variety
-const PRAYER_COLORS: Record<PrayerName, { bg: string; accent: string; light: string }> = {
-  fajr:    { bg: '#FDF4FF', accent: '#A855F7', light: '#F3E8FF' },
-  dhuhr:   { bg: '#FFFBEB', accent: '#D97706', light: '#FEF3C7' },
-  asr:     { bg: '#F0FDF4', accent: '#059669', light: '#D1FAE5' },
-  maghrib: { bg: '#FFF1F2', accent: '#E11D48', light: '#FFE4E6' },
-  isha:    { bg: '#EFF6FF', accent: '#2563EB', light: '#DBEAFE' },
-};
 
 export default function SalahTrackerScreen() {
   const [entries, setEntries] = useState<SalahDayEntry[]>([]);
@@ -88,7 +67,6 @@ export default function SalahTrackerScreen() {
       const userId = getUserId();
       const newStatus = await salahRepository.togglePrayer(userId, prayerName);
 
-      // Optimistic update
       setEntries((prev) =>
         prev.map((e) =>
           e.prayer_name === prayerName
@@ -103,7 +81,6 @@ export default function SalahTrackerScreen() {
         setExpandedPrayer(null);
       }
 
-      // Reload streaks and history in background
       Promise.all([
         salahRepository.getStreaks(userId),
         salahRepository.getLast7DaysLog(userId),
@@ -132,259 +109,248 @@ export default function SalahTrackerScreen() {
     }
   };
 
-  const prayedCount = entries.filter((e) => e.status === 'prayed').length;
-  const totalPrayers = PRAYER_NAMES.length;
-  const completionPct = Math.round((prayedCount / totalPrayers) * 100);
-
-  const getStreakForPrayer = (name: PrayerName): SalahStreak =>
-    streaks.find((s) => s.prayer_name === name) || {
-      prayer_name: name,
-      current_streak: 0,
-      longest_streak: 0,
-      last_completed_day: null,
-    };
-
-  const getStatusIcon = (status: PrayerStatus, size = 20) => {
-    switch (status) {
-      case 'prayed':
-        return <Check size={size} color="#ffffff" strokeWidth={3} />;
-      case 'missed':
-        return <X size={size} color="#ffffff" strokeWidth={3} />;
-      default:
-        return <Minus size={size - 2} color="#9CA3AF" strokeWidth={2.5} />;
-    }
-  };
-
-  const getStatusColor = (status: PrayerStatus, accent: string) => {
-    switch (status) {
-      case 'prayed':
-        return accent;
-      case 'missed':
-        return '#EF4444';
-      default:
-        return '#E5E7EB';
+  const handleUpdateSunnahUnits = async (prayerName: PrayerName, currentUnits: number) => {
+    try {
+      // Toggle logic for simple demo (0 -> 2 -> 0)
+      const maxUnits = prayerName === 'dhuhr' ? 6 : 2;
+      const newUnits = currentUnits >= maxUnits ? 0 : currentUnits + 2;
+      
+      const userId = getUserId();
+      await salahRepository.updateSunnahRawatibUnits(userId, prayerName, newUnits);
+      
+      setEntries((prev) =>
+        prev.map((e) =>
+          e.prayer_name === prayerName
+            ? { ...e, sunnah_rawatib_units: newUnits }
+            : e
+        )
+      );
+    } catch (e) {
+      console.warn('[SalahTracker] Update Sunnah error:', e);
     }
   };
 
   if (isLoading) return null;
 
-  const historyDates = Object.keys(history).sort((a, b) => b.localeCompare(a)).filter(d => d !== getLocalDayStr());
+  // 7 days history including today for the "Your Journey" calendar view
+  const daysOfHistory = Object.keys(history).sort((a, b) => a.localeCompare(b)); // oldest first
+  const todayEntry = entries.filter(e => e.prayer_name !== 'duha' && e.prayer_name !== 'tahajjud');
+  const maxStreak = streaks.reduce((max, s) => Math.max(max, s.current_streak), 0);
+
+  const getDayInitial = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'narrow' });
+  };
+
+  const getFardEntries = () => entries.filter(e => e.prayer_name !== 'duha' && e.prayer_name !== 'tahajjud');
+
+  const renderHistoryCircle = (dateStr: string, isToday: boolean) => {
+    const dayLog = isToday ? entries : history[dateStr] || [];
+    const fardLog = dayLog.filter(e => e.prayer_name !== 'duha' && e.prayer_name !== 'tahajjud');
+    const totalFard = 5;
+    const prayedFard = fardLog.filter(e => e.status === 'prayed').length;
+    
+    let circleStyle: any[] = [styles.dayCircle, styles.dayCircleEmpty];
+    let icon = null;
+
+    if (prayedFard === totalFard) {
+      circleStyle = [styles.dayCircle, styles.dayCirclePerfect];
+      icon = <CheckCircle2 size={16} color={colors.sg.onPrimary} />;
+    } else if (prayedFard > 0) {
+      circleStyle = [styles.dayCircle, styles.dayCirclePartial];
+      icon = <CheckCircle2 size={16} color={colors.sg.primary} />;
+    } else if (isToday) {
+      circleStyle = [styles.dayCircle, styles.dayCircleToday];
+      icon = <Clock size={16} color={colors.sg.primary} />;
+    }
+
+    return (
+      <View key={dateStr} style={styles.dayCol}>
+        <Text style={styles.dayLabel}>{getDayInitial(dateStr)}</Text>
+        <View style={circleStyle}>{icon}</View>
+      </View>
+    );
+  };
+
+  // Sunnah Rawatib logic
+  const sunnahUnits = {
+    fajr: entries.find(e => e.prayer_name === 'fajr')?.sunnah_rawatib_units || 0,
+    dhuhr: entries.find(e => e.prayer_name === 'dhuhr')?.sunnah_rawatib_units || 0,
+    maghrib: entries.find(e => e.prayer_name === 'maghrib')?.sunnah_rawatib_units || 0,
+    isha: entries.find(e => e.prayer_name === 'isha')?.sunnah_rawatib_units || 0,
+  };
+  const totalSunnahUnits = sunnahUnits.fajr + sunnahUnits.dhuhr + sunnahUnits.maghrib + sunnahUnits.isha;
 
   return (
     <ScreenContainer safe={false} style={styles.container}>
       <Header title="Salah Tracker" showBack />
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Date header */}
-        <Text style={styles.dateText}>{formatToday()}</Text>
-
-        {/* Summary Card */}
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryLeft}>
-            <Text style={styles.summaryFraction}>
-              {prayedCount}
-              <Text style={styles.summaryDenom}> / {totalPrayers}</Text>
-            </Text>
-            <Text style={styles.summaryLabel}>Prayers completed</Text>
-          </View>
-
-          {/* Circular progress ring */}
-          <View style={styles.ringContainer}>
-            <View style={styles.ringOuter}>
-              <View
-                style={[
-                  styles.ringFill,
-                  {
-                    borderColor:
-                      prayedCount === totalPrayers
-                        ? '#059669'
-                        : prayedCount > 0
-                        ? '#D97706'
-                        : '#E5E7EB',
-                  },
-                ]}
-              />
-              <Text style={styles.ringText}>{completionPct}%</Text>
-            </View>
-          </View>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        
+        {/* Your Journey (7-Day Streak View) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeading}>Your Journey</Text>
+          <Text style={styles.streakText}>{maxStreak} Day Streak</Text>
         </View>
 
-        {/* Prayer Cards */}
-        {PRAYER_NAMES.map((name) => {
-          const entry = entries.find((e) => e.prayer_name === name) || {
-            prayer_name: name,
-            status: 'pending' as PrayerStatus,
-            khushu: null,
-            reflection: null,
-            marked_at: null,
-          };
-          const display = PRAYER_DISPLAY[name];
-          const prayerColor = PRAYER_COLORS[name];
-          const streak = getStreakForPrayer(name);
-          const isExpanded = expandedPrayer === name && entry.status === 'prayed';
+        <View style={styles.streakCard}>
+          <View style={styles.daysRow}>
+            {daysOfHistory.map(date => renderHistoryCircle(date, date === getLocalDayStr()))}
+          </View>
+          <Text style={styles.quoteText}>"Indeed, prayer prohibits immorality and wrongdoing."</Text>
+        </View>
 
-          return (
-            <View key={name} style={[styles.prayerCardContainer, { borderColor: entry.status === 'prayed' ? prayerColor.accent + '30' : '#f5f5f4' }]}>
-              <TouchableOpacity
-                style={[
-                  styles.prayerCard,
-                  {
-                    backgroundColor: entry.status === 'prayed' ? prayerColor.light : '#ffffff',
-                    borderBottomWidth: isExpanded ? 1 : 0,
-                    borderColor: prayerColor.accent + '30',
-                  },
-                ]}
-                onPress={() => handleToggle(name)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.prayerCardLeft}>
-                  {/* Status circle */}
-                  <View
-                    style={[
-                      styles.statusCircle,
-                      {
-                        backgroundColor: getStatusColor(entry.status, prayerColor.accent),
-                        borderColor:
-                          entry.status === 'pending'
-                            ? '#D1D5DB'
-                            : getStatusColor(entry.status, prayerColor.accent),
-                      },
-                    ]}
-                  >
-                    {getStatusIcon(entry.status)}
+        {/* Fard Salah */}
+        <View style={styles.sectionHeaderRowWithLine}>
+          <View style={styles.verticalLinePrimary} />
+          <Text style={styles.sectionHeading}>Fard Salah</Text>
+        </View>
+
+        <View style={styles.prayersList}>
+          {getFardEntries().map(entry => {
+            const isExpanded = expandedPrayer === entry.prayer_name;
+            const display = PRAYER_DISPLAY[entry.prayer_name];
+            const isPrayed = entry.status === 'prayed';
+            const isMissed = entry.status === 'missed';
+
+            return (
+              <View key={entry.prayer_name} style={styles.prayerCardWrapper}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={[
+                    styles.fardCard,
+                    isPrayed && styles.fardCardPrayed,
+                    isMissed && styles.fardCardMissed
+                  ]}
+                  onPress={() => handleToggle(entry.prayer_name)}
+                >
+                  <View style={styles.fardLeft}>
+                    <View style={styles.iconCircle}>
+                      <Text style={{fontSize: 24}}>{display.emoji}</Text>
+                    </View>
+                    <View>
+                      <Text style={[styles.fardName, isPrayed && {color: colors.sg.onPrimaryContainer}]}>{display.label}</Text>
+                      <Text style={[styles.fardTime, isPrayed && {color: colors.sg.onPrimaryContainer}]}>{display.time}</Text>
+                    </View>
                   </View>
 
-                  {/* Prayer info */}
-                  <View style={styles.prayerInfo}>
-                    <View style={styles.prayerNameRow}>
-                      <Text style={styles.prayerEmoji}>{display.emoji}</Text>
-                      <Text
-                        style={[
-                          styles.prayerName,
-                          entry.status === 'prayed' && { color: prayerColor.accent },
-                        ]}
-                      >
-                        {display.label}
-                      </Text>
-                    </View>
-                    <Text style={styles.prayerTime}>{display.time}</Text>
+                  <View style={[styles.checkbox, isPrayed && styles.checkboxChecked, isMissed && styles.checkboxMissed]}>
+                    {isPrayed && <Check size={20} color={colors.sg.onPrimaryContainer} strokeWidth={3} />}
+                    {isMissed && <X size={20} color={colors.sg.onErrorContainer} strokeWidth={3} />}
                   </View>
-                </View>
+                </TouchableOpacity>
 
-                {/* Streak badge */}
-                <View style={styles.prayerCardRight}>
-                  {streak.current_streak > 0 && (
-                    <View style={[styles.streakBadge, { backgroundColor: prayerColor.bg }]}>
-                      <Flame size={12} color={prayerColor.accent} />
-                      <Text style={[styles.streakBadgeText, { color: prayerColor.accent }]}>
-                        {streak.current_streak}
-                      </Text>
+                {isExpanded && (
+                  <View style={styles.expandedArea}>
+                    <Text style={styles.khushuLabel}>Khushu (Focus) Level</Text>
+                    <View style={styles.starsContainer}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <TouchableOpacity
+                          key={star}
+                          onPress={() => handleUpdateKhushuReflection(entry.prayer_name, star, entry.reflection)}
+                        >
+                          <Star
+                            size={28}
+                            color={entry.khushu && entry.khushu >= star ? colors.sg.secondary : '#D1D5DB'}
+                            fill={entry.khushu && entry.khushu >= star ? colors.sg.secondary : 'transparent'}
+                          />
+                        </TouchableOpacity>
+                      ))}
                     </View>
-                  )}
-                  {streak.longest_streak > 0 && (
-                    <View style={styles.bestBadge}>
-                      <Trophy size={10} color="#9CA3AF" />
-                      <Text style={styles.bestBadgeText}>{streak.longest_streak}</Text>
-                    </View>
-                  )}
-                </View>
-
-                {/* Expansion indicator */}
-                {entry.status === 'prayed' && (
-                  <TouchableOpacity 
-                    style={styles.expandButton}
-                    onPress={() => setExpandedPrayer(isExpanded ? null : name)}
-                  >
-                    {isExpanded ? <ChevronUp size={20} color={prayerColor.accent} /> : <ChevronDown size={20} color={prayerColor.accent} />}
-                  </TouchableOpacity>
+                    
+                    <TextInput
+                      style={styles.reflectionInput}
+                      placeholder="Short reflection (optional)..."
+                      placeholderTextColor={colors.sg.onSurfaceVariant}
+                      value={entry.reflection || ''}
+                      onChangeText={(text) => handleUpdateKhushuReflection(entry.prayer_name, entry.khushu, text)}
+                      multiline
+                    />
+                  </View>
                 )}
-              </TouchableOpacity>
-              
-              {/* Expanded Reflection Area */}
-              {isExpanded && (
-                <View style={[styles.expandedArea, { backgroundColor: prayerColor.light }]}>
-                  <Text style={[styles.khushuLabel, { color: prayerColor.accent }]}>Khushu (Focus) Level</Text>
-                  <View style={styles.starsContainer}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <TouchableOpacity
-                        key={star}
-                        onPress={() => handleUpdateKhushuReflection(name, star, entry.reflection)}
-                      >
-                        <Star
-                          size={28}
-                          color={entry.khushu && entry.khushu >= star ? '#F59E0B' : '#D1D5DB'}
-                          fill={entry.khushu && entry.khushu >= star ? '#F59E0B' : 'transparent'}
-                        />
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                  
-                  <TextInput
-                    style={styles.reflectionInput}
-                    placeholder="Short reflection (optional)..."
-                    placeholderTextColor="#9CA3AF"
-                    value={entry.reflection || ''}
-                    onChangeText={(text) => handleUpdateKhushuReflection(name, entry.khushu, text)}
-                    multiline
-                  />
-                </View>
-              )}
-            </View>
-          );
-        })}
-
-        {/* Legend */}
-        <View style={styles.legend}>
-          <Text style={styles.legendTitle}>Tap to cycle status</Text>
-          <View style={styles.legendRow}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: '#E5E7EB' }]} />
-              <Text style={styles.legendText}>Pending</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: '#059669' }]} />
-              <Text style={styles.legendText}>Prayed</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
-              <Text style={styles.legendText}>Missed</Text>
-            </View>
-          </View>
+              </View>
+            );
+          })}
         </View>
 
-        {/* 7-Day History */}
-        {historyDates.length > 0 && (
-          <View style={styles.historySection}>
-            <Text style={styles.historyTitle}>Past 6 Days History</Text>
-            {historyDates.map(date => {
-              const dayEntries = history[date];
-              const dayPrayed = dayEntries.filter(e => e.status === 'prayed').length;
-              return (
-                <View key={date} style={styles.historyRow}>
-                  <Text style={styles.historyDate}>{formatDateShort(date)}</Text>
-                  <View style={styles.historyDots}>
-                    {PRAYER_NAMES.map(name => {
-                      const e = dayEntries.find(p => p.prayer_name === name) || { status: 'pending' as PrayerStatus };
-                      return (
-                        <View
-                          key={name}
-                          style={[
-                            styles.historyDot,
-                            { backgroundColor: getStatusColor(e.status, PRAYER_COLORS[name].accent) }
-                          ]}
-                        />
-                      );
-                    })}
+        {/* Voluntary & Sunnah Section */}
+        <View style={styles.sectionHeaderRowWithLine}>
+          <View style={styles.verticalLineSecondary} />
+          <Text style={styles.sectionHeading}>Voluntary & Sunnah</Text>
+        </View>
+
+        <View style={styles.voluntaryGrid}>
+          {['duha', 'tahajjud'].map(pName => {
+            const name = pName as PrayerName;
+            const entry = entries.find(e => e.prayer_name === name) || { status: 'pending', prayer_name: name };
+            const isPrayed = entry.status === 'prayed';
+            const display = PRAYER_DISPLAY[name];
+
+            return (
+              <SpiritualCard key={name} style={styles.volCard} featured>
+                <View style={styles.volCardHeader}>
+                  <Text style={{fontSize: 20}}>{display.emoji}</Text>
+                  <View style={styles.volBadge}>
+                    <Text style={styles.volBadgeText}>{display.time}</Text>
                   </View>
-                  <Text style={styles.historyCount}>{dayPrayed}/5</Text>
                 </View>
-              );
-            })}
+                <View style={styles.volInfo}>
+                  <Text style={styles.volName}>{display.label}</Text>
+                  <Text style={styles.volDesc}>{name === 'duha' ? "Morning gratitude." : "Deep night connection."}</Text>
+                </View>
+                <TouchableOpacity 
+                  style={[styles.volBtn, isPrayed && styles.volBtnActive]}
+                  onPress={() => handleToggle(name)}
+                >
+                  <Text style={[styles.volBtnText, isPrayed && styles.volBtnTextActive]}>
+                    {isPrayed ? 'Logged' : 'Log Prayer'}
+                  </Text>
+                </TouchableOpacity>
+              </SpiritualCard>
+            );
+          })}
+        </View>
+
+        {/* Sunnah Rawatib Tracker */}
+        <SpiritualCard style={styles.rawatibCard}>
+          <View style={styles.rawatibHeader}>
+            <Text style={styles.rawatibTitle}>Sunnah Rawatib</Text>
+            <Text style={styles.rawatibCount}>{totalSunnahUnits} / 12 units</Text>
           </View>
-        )}
+          
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: `${Math.min((totalSunnahUnits / 12) * 100, 100)}%` }]} />
+          </View>
+
+          <View style={styles.rawatibGrid}>
+            <TouchableOpacity onPress={() => handleUpdateSunnahUnits('fajr', sunnahUnits.fajr)} style={styles.rawatibCol}>
+              <Text style={styles.rawatibLabel}>Pre-Fajr</Text>
+              <View style={[styles.rawatibBox, sunnahUnits.fajr > 0 && styles.rawatibBoxActive]}>
+                <Text style={[styles.rawatibBoxText, sunnahUnits.fajr > 0 && styles.rawatibBoxTextActive]}>{sunnahUnits.fajr}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleUpdateSunnahUnits('dhuhr', sunnahUnits.dhuhr)} style={styles.rawatibCol}>
+              <Text style={styles.rawatibLabel}>Dhuhr</Text>
+              <View style={[styles.rawatibBox, sunnahUnits.dhuhr > 0 && styles.rawatibBoxActive]}>
+                <Text style={[styles.rawatibBoxText, sunnahUnits.dhuhr > 0 && styles.rawatibBoxTextActive]}>{sunnahUnits.dhuhr}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleUpdateSunnahUnits('maghrib', sunnahUnits.maghrib)} style={styles.rawatibCol}>
+              <Text style={styles.rawatibLabel}>Maghrib</Text>
+              <View style={[styles.rawatibBox, sunnahUnits.maghrib > 0 && styles.rawatibBoxActive]}>
+                <Text style={[styles.rawatibBoxText, sunnahUnits.maghrib > 0 && styles.rawatibBoxTextActive]}>{sunnahUnits.maghrib}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleUpdateSunnahUnits('isha', sunnahUnits.isha)} style={styles.rawatibCol}>
+              <Text style={styles.rawatibLabel}>Isha</Text>
+              <View style={[styles.rawatibBox, sunnahUnits.isha > 0 && styles.rawatibBoxActive]}>
+                <Text style={[styles.rawatibBoxText, sunnahUnits.isha > 0 && styles.rawatibBoxTextActive]}>{sunnahUnits.isha}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </SpiritualCard>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -395,148 +361,180 @@ export default function SalahTrackerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.sg.background,
   },
   content: {
-    padding: spacing.m,
-    paddingTop: spacing.s,
+    paddingHorizontal: 24,
+    paddingTop: 16,
   },
-  dateText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    marginBottom: spacing.m,
-    textAlign: 'center',
-  },
-
-  // Summary card
-  summaryCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 20,
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 16,
+  },
+  sectionHeaderRowWithLine: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#f5f5f4',
+    marginBottom: 16,
+    marginTop: 40,
   },
-  summaryLeft: {},
-  summaryFraction: {
-    fontSize: 40,
-    fontWeight: '800',
-    color: '#1F2937',
+  verticalLinePrimary: {
+    width: 4,
+    height: 32,
+    backgroundColor: colors.sg.secondary,
+    borderRadius: 2,
+    marginRight: 12,
   },
-  summaryDenom: {
-    fontSize: 20,
-    fontWeight: '500',
-    color: '#9CA3AF',
+  verticalLineSecondary: {
+    width: 4,
+    height: 32,
+    backgroundColor: colors.sg.secondaryContainer,
+    borderRadius: 2,
+    marginRight: 12,
   },
-  summaryLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6B7280',
-    marginTop: 4,
+  sectionHeading: {
+    ...typography.sg.headlineLgMobile,
+    color: colors.sg.primary,
   },
-
-  // Ring
-  ringContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  streakText: {
+    ...typography.sg.labelMd,
+    color: colors.sg.secondary,
   },
-  ringOuter: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 5,
-    borderColor: '#E5E7EB',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ringFill: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 32,
-    borderWidth: 5,
-  },
-  ringText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#374151',
-  },
-
-  // Prayer cards
-  prayerCardContainer: {
-    marginBottom: 10,
+  
+  // Streak Card
+  streakCard: {
+    backgroundColor: colors.sg.surfaceContainerHighest,
     borderRadius: 16,
-    borderWidth: 1.5,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
-    overflow: 'hidden',
+    padding: 24,
+    borderWidth: 1,
+    borderColor: colors.sg.outlineVariant,
   },
-  prayerCard: {
+  daysRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    marginBottom: 24,
   },
-  prayerCardLeft: {
-    flexDirection: 'row',
+  dayCol: {
     alignItems: 'center',
-    flex: 1,
+    gap: 8,
   },
-  statusCircle: {
+  dayLabel: {
+    ...typography.sg.labelMd,
+    color: colors.sg.onSurfaceVariant,
+  },
+  dayCircle: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  dayCirclePerfect: {
+    backgroundColor: colors.sg.primary,
+  },
+  dayCirclePartial: {
+    backgroundColor: colors.sg.primaryFixedDim,
     borderWidth: 2,
-    marginRight: 14,
+    borderColor: colors.sg.primary,
   },
-  prayerInfo: {
-    flex: 1,
+  dayCircleToday: {
+    backgroundColor: colors.sg.surfaceContainerHighest,
+    borderWidth: 2,
+    borderColor: colors.sg.primary,
   },
-  prayerNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+  dayCircleEmpty: {
+    backgroundColor: colors.sg.surfaceContainer,
+    borderWidth: 1,
+    borderColor: colors.sg.outlineVariant,
+    opacity: 0.6,
   },
-  prayerEmoji: {
-    fontSize: 18,
-  },
-  prayerName: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#292524',
-  },
-  prayerTime: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#9CA3AF',
-    marginTop: 2,
-    marginLeft: 26,
+  quoteText: {
+    ...typography.sg.spiritualText,
+    color: colors.sg.onSurfaceVariant,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 
-  // Expanded area
+  // Fard Cards
+  prayersList: {
+    gap: 12,
+  },
+  prayerCardWrapper: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  fardCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+    backgroundColor: colors.sg.surfaceContainerLowest,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.sg.outlineVariant,
+  },
+  fardCardPrayed: {
+    backgroundColor: colors.sg.primaryContainer,
+    borderColor: colors.sg.primaryContainer,
+  },
+  fardCardMissed: {
+    backgroundColor: colors.sg.errorContainer,
+    borderColor: colors.sg.error,
+  },
+  fardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.sg.surfaceContainerHigh,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fardName: {
+    ...typography.sg.bodyLg,
+    fontWeight: '700',
+    color: colors.sg.onSurface,
+  },
+  fardTime: {
+    ...typography.sg.labelMd,
+    color: colors.sg.onSurfaceVariant,
+    marginTop: 2,
+  },
+  checkbox: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.sg.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: colors.sg.primaryContainer,
+    borderWidth: 0,
+  },
+  checkboxMissed: {
+    borderColor: colors.sg.error,
+    borderWidth: 2,
+  },
+
+  // Expansion
   expandedArea: {
-    padding: 16,
-    paddingTop: 8,
+    backgroundColor: colors.sg.surfaceContainer,
+    padding: 20,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
   khushuLabel: {
-    fontSize: 13,
-    fontWeight: '600',
+    ...typography.sg.labelMd,
+    color: colors.sg.primaryContainer,
     marginBottom: 8,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   starsContainer: {
     flexDirection: 'row',
@@ -544,129 +542,135 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   reflectionInput: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: colors.sg.surfaceContainerLowest,
     borderRadius: 12,
-    padding: 12,
-    fontSize: 14,
-    color: '#374151',
-    minHeight: 60,
+    padding: 16,
+    ...typography.sg.bodyMd,
+    color: colors.sg.onSurface,
+    minHeight: 80,
     textAlignVertical: 'top',
   },
-  expandButton: {
-    marginLeft: 8,
-    padding: 4,
-  },
 
-  // Streak badges
-  prayerCardRight: {
-    alignItems: 'flex-end',
-    gap: 4,
-    marginRight: 4,
-  },
-  streakBadge: {
+  // Voluntary
+  voluntaryGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderRadius: 10,
+    gap: 16,
+    marginBottom: 24,
   },
-  streakBadgeText: {
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  bestBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 8,
-    backgroundColor: '#F3F4F6',
-  },
-  bestBadgeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#9CA3AF',
-  },
-
-  // Legend
-  legend: {
-    marginTop: 16,
-    alignItems: 'center',
-  },
-  legendTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#9CA3AF',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  legendRow: {
-    flexDirection: 'row',
-    gap: 20,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#6B7280',
-  },
-
-  // History section
-  historySection: {
-    marginTop: 32,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
+  volCard: {
+    flex: 1,
     padding: 16,
-    borderWidth: 1,
-    borderColor: '#f5f5f4',
   },
-  historyTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#374151',
+  volCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  volBadge: {
+    backgroundColor: colors.sg.secondaryContainer + '30',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+  },
+  volBadgeText: {
+    ...typography.sg.labelMd,
+    fontSize: 10,
+    color: colors.sg.onSecondaryContainer,
+  },
+  volInfo: {
+    flex: 1,
     marginBottom: 16,
   },
-  historyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  volName: {
+    ...typography.sg.bodyMd,
+    fontWeight: '700',
+    color: colors.sg.onSurface,
+  },
+  volDesc: {
+    ...typography.sg.labelMd,
+    fontSize: 11,
+    color: colors.sg.onSurfaceVariant,
+    marginTop: 4,
+  },
+  volBtn: {
+    backgroundColor: colors.sg.secondary,
     paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderRadius: 8,
+    alignItems: 'center',
   },
-  historyDate: {
-    fontSize: 13,
-    color: '#6B7280',
-    width: 80,
+  volBtnActive: {
+    backgroundColor: colors.sg.surfaceContainerHigh,
   },
-  historyDots: {
+  volBtnText: {
+    ...typography.sg.labelMd,
+    color: colors.sg.onSecondary,
+  },
+  volBtnTextActive: {
+    color: colors.sg.onSurfaceVariant,
+  },
+
+  // Sunnah Rawatib
+  rawatibCard: {
+    padding: 24,
+  },
+  rawatibHeader: {
     flexDirection: 'row',
-    gap: 8,
-    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  rawatibTitle: {
+    ...typography.sg.bodyLg,
+    fontWeight: '700',
+    color: colors.sg.primary,
+  },
+  rawatibCount: {
+    ...typography.sg.labelMd,
+    color: colors.sg.secondary,
+  },
+  progressBarBg: {
+    height: 8,
+    backgroundColor: colors.sg.surfaceContainerHigh,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 24,
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: colors.sg.secondary,
+    borderRadius: 4,
+  },
+  rawatibGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  rawatibCol: {
+    alignItems: 'center',
+  },
+  rawatibLabel: {
+    ...typography.sg.labelMd,
+    fontSize: 11,
+    color: colors.sg.onSurfaceVariant,
+    marginBottom: 8,
+  },
+  rawatibBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: colors.sg.surfaceContainerHighest,
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  historyDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+  rawatibBoxActive: {
+    backgroundColor: colors.sg.primaryContainer,
   },
-  historyCount: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#374151',
-    width: 30,
-    textAlign: 'right',
+  rawatibBoxText: {
+    ...typography.sg.bodyLg,
+    fontWeight: '700',
+    color: colors.sg.onSurfaceVariant,
+  },
+  rawatibBoxTextActive: {
+    color: colors.sg.onPrimaryContainer,
   },
 });

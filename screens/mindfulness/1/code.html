@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Al-Noor - Spiritual AI Guidance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#454441",
+                      "surface-container-highest": "#d9e3f6",
+                      "surface": "#f8f9ff",
+                      "on-error-container": "#93000a",
+                      "secondary": "#735c00",
+                      "on-tertiary-container": "#b3b1ad",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#d0dbed",
+                      "on-primary-fixed": "#002117",
+                      "on-primary-container": "#80bea6",
+                      "on-primary-fixed-variant": "#0b513d",
+                      "primary-fixed": "#b0f0d6",
+                      "on-tertiary-fixed-variant": "#474743",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f8f9ff",
+                      "primary": "#003527",
+                      "on-error": "#ffffff",
+                      "surface-container": "#e6eeff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "on-tertiary-fixed": "#1c1c19",
+                      "on-surface-variant": "#404944",
+                      "inverse-primary": "#95d3ba",
+                      "on-secondary-container": "#745c00",
+                      "secondary-fixed": "#ffe088",
+                      "tertiary-fixed": "#e5e2dd",
+                      "primary-container": "#064e3b",
+                      "on-background": "#121c2a",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "outline": "#707974",
+                      "outline-variant": "#bfc9c3",
+                      "on-secondary-fixed": "#241a00",
+                      "secondary-container": "#fed65b",
+                      "secondary-fixed-dim": "#e9c349",
+                      "inverse-surface": "#27313f",
+                      "background": "#F5F2ED",
+                      "surface-variant": "#d9e3f6",
+                      "primary-fixed-dim": "#95d3ba",
+                      "surface-tint": "#2b6954",
+                      "on-secondary-fixed-variant": "#574500",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#2e2e2b",
+                      "on-surface": "#121c2a",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-high": "#dee9fc",
+                      "tertiary-fixed-dim": "#c9c6c2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "container-margin": "24px",
+                      "unit": "8px",
+                      "section-gap": "48px"
+              },
+              "fontFamily": {
+                      "body-md": ["Manrope"],
+                      "spiritual-text": ["Libre Caslon Text"],
+                      "label-md": ["Manrope"],
+                      "headline-lg-mobile": ["Libre Caslon Text"],
+                      "display-lg": ["Libre Caslon Text"],
+                      "body-lg": ["Manrope"],
+                      "headline-lg": ["Libre Caslon Text"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "spiritual-text": ["20px", {"lineHeight": "32px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #F5F2ED; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .glass-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(0,0,0,0.04); }
+        .gold-accent { border-top: 2px solid #fed65b; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 glass-nav">
+<div class="flex justify-between items-center px-container-margin py-unit h-16 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-headline-lg">spa</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">Sakina</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User" class="w-full h-full object-cover" data-alt="A professional and serene portrait of a person with a warm expression, set against a soft-focus architectural background with Islamic geometric patterns. The lighting is natural and high-key, emphasizing a peaceful and mindful atmosphere. The color palette consists of soft beiges, creams, and deep emerald greens, aligning with a premium spiritual wellness application's minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPxaKWhs6dxNNvaCNMhw1x48luIG5WG7g8tFlCKsqXhSlaVxayaSY-DG_dLY5--LX7lkTtQ_We_cos_GRvsi_n_dZ8ixZlqUnyYKAfEZq8KbP3yqamLz9U7u8qtrP8ShoKpS_jUDo-W9JNiUMiBB5KVt9-nKGlyvx7g2QSCJ93T--f06K0ZULjM4TjvCL9Vw1Lfb0XdSIY2nMNFKC7wWCtL9kKPMl60rqEMtjKV8RpnGSJl-rP7UwQv7CiJZB-kNPAlAY85T0VCIs"/>
+</div>
+</div>
+<!-- Segmented Control Bar -->
+<div class="px-container-margin pb-4">
+<div class="flex bg-surface-container-low p-1 rounded-full border border-outline-variant/30">
+<button class="flex-1 py-2 font-label-md text-label-md text-on-surface-variant transition-colors">Home</button>
+<button class="flex-1 py-2 font-label-md text-label-md text-on-surface-variant transition-colors">Quiz</button>
+<button class="flex-1 py-2 font-label-md text-label-md bg-primary text-on-primary rounded-full shadow-sm">AI</button>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-32 px-container-margin max-w-7xl mx-auto space-y-section-gap">
+<!-- Hero Spiritual Text -->
+<section class="text-center space-y-2">
+<p class="font-label-md text-label-md text-secondary uppercase tracking-widest">Spiritual Sanctuary</p>
+<h2 class="font-display-lg text-[32px] md:text-display-lg leading-tight text-primary">Your Heart's Guide</h2>
+</section>
+<!-- Main AI Interactive Card -->
+<section class="bg-surface-container-lowest rounded-[32px] p-gutter card-shadow gold-accent animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="space-y-4">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Ask About My</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Get Quranic guidance for how you feel.</p>
+</div>
+<span class="material-symbols-outlined text-secondary-container text-4xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<!-- Mood Chips Row -->
+<div class="flex gap-3 overflow-x-auto no-scrollbar py-2 -mx-2 px-2">
+<button class="flex items-center gap-2 whitespace-nowrap px-5 py-3 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md transition-all active:scale-95 shadow-sm">
+<span>☀️</span> Grateful
+                    </button>
+<button class="flex items-center gap-2 whitespace-nowrap px-5 py-3 rounded-full bg-white border border-outline-variant text-on-surface-variant font-label-md text-label-md transition-all active:scale-95 hover:bg-surface-container-low">
+<span>🍃</span> Restless
+                    </button>
+<button class="flex items-center gap-2 whitespace-nowrap px-5 py-3 rounded-full bg-white border border-outline-variant text-on-surface-variant font-label-md text-label-md transition-all active:scale-95 hover:bg-surface-container-low">
+<span>🌧️</span> Anxious
+                    </button>
+<button class="flex items-center gap-2 whitespace-nowrap px-5 py-3 rounded-full bg-white border border-outline-variant text-on-surface-variant font-label-md text-label-md transition-all active:scale-95 hover:bg-surface-container-low">
+<span>🕊️</span> Peaceful
+                    </button>
+</div>
+<!-- Guidance Input Placeholder -->
+<div class="mt-4 p-4 rounded-2xl bg-surface-container-low/50 border border-dashed border-outline-variant flex items-center justify-between">
+<span class="text-on-surface-variant/60 font-body-md">Tell Al-Noor what's on your mind...</span>
+<span class="material-symbols-outlined text-primary">send</span>
+</div>
+</div>
+</section>
+<!-- Heart & Habits Card -->
+<section class="bg-surface-container-lowest rounded-[32px] p-gutter card-shadow animate-in fade-in slide-in-from-bottom-8 duration-1000">
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h3 class="font-headline-lg-mobile text-[24px] text-primary">Heart &amp; Habits</h3>
+</div>
+<span class="font-label-md text-label-md text-secondary">LIVE</span>
+</div>
+<!-- Heart Rate Visualization -->
+<div class="relative h-24 w-full flex items-end justify-center gap-1 overflow-hidden">
+<!-- Minimalistic heart rate wave -->
+<div class="absolute inset-0 flex items-center justify-center opacity-10">
+<span class="material-symbols-outlined text-[120px]">monitor_heart</span>
+</div>
+<!-- Custom Bar Chart Baseline -->
+<div class="w-2 bg-primary/20 rounded-t-full h-8 animate-[pulse_2s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary/30 rounded-t-full h-12 animate-[pulse_2.2s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary/40 rounded-t-full h-16 animate-[pulse_1.8s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary rounded-t-full h-10 animate-[pulse_2.5s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary/60 rounded-t-full h-20 animate-[pulse_2.1s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary/30 rounded-t-full h-14 animate-[pulse_1.9s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary/10 rounded-t-full h-8 animate-[pulse_2.3s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary/40 rounded-t-full h-18 animate-[pulse_1.7s_infinite_ease-in-out]"></div>
+<div class="w-2 bg-primary rounded-t-full h-12 animate-[pulse_2s_infinite_ease-in-out]"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant pt-2">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md opacity-60">Avg. Heart Rate</span>
+<span class="font-headline-lg text-primary text-2xl">72 BPM</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-md text-label-md opacity-60">Daily Focus</span>
+<span class="font-headline-lg text-primary text-2xl">84%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Suggested Reflection -->
+<section class="space-y-4">
+<h4 class="font-headline-lg-mobile text-[20px] text-primary px-2">Reflections for you</h4>
+<div class="grid grid-cols-2 gap-4">
+<div class="aspect-square bg-surface-container rounded-3xl overflow-hidden relative group">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A breathtaking, minimalist landscape photograph of a desert during the golden hour. The soft sand dunes are bathed in deep orange and warm gold light, with long shadows creating a serene rhythmic pattern. The sky is a pale, hazy blue, evoking a sense of eternal peace and spiritual reflection, matching the Al-Noor emerald and sand color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw99Lkq1MYlY3YSIWAhpamWI1yvmkZmRJOVmecBXVjgN0hfB3tYOmh4E67JFlfpGicTMaKKjD5snq8_LXv-HuJVvL5H-uSY5zHzrb3IWN-5-KZ4ZyYkdb6fHTPsSnA97sXIMcF86YIoR2o_PqpkkWTpAnjwPHYEEnPsr6twQ5gpqq8wxbO9wzCmEB41BT_5s-dewQH4q0V4UgQg_USwyFAc3HADdcp7Ars3HV0FI6pd8qrE7YmcFQOizt4_q5-k37gcxWEz4xiFpE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent p-4 flex flex-col justify-end">
+<span class="font-label-md text-white text-[12px] opacity-80 uppercase tracking-tighter">Wisdom</span>
+<p class="font-spiritual-text text-white text-sm leading-tight">Finding light in the dark</p>
+</div>
+</div>
+<div class="aspect-square bg-surface-container rounded-3xl overflow-hidden relative group">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A serene, wide-angle shot of misty mountains at dawn, reflecting in a crystal-clear lake. The color palette is composed of muted greens, soft greys, and deep forest hues. The lighting is diffused and ethereal, creating a quiet sanctuary-like feeling suitable for mindfulness and spiritual meditation practices." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsdes0-kLLGkOm_Ki0asyyc2t4EDxAPVm4svH35yTxUYSOMWqlZ4Eeyy9Vgm3cpeY55N_3ypjx8JJG9mfUHt5ETD9ZwBfJKou6H0AvkXBcgceZwHf3Z6wgb_mDg1Hv_Lw2hJVo_44k8y8pgAzOfH2pJbPKfXZRKCyD5TG1AidPdO15F58moCqD7dMipuBnrNG-1gbwTbmfIxUIiDwXJ4C_tivjdLKRvbiVsmq5UQJjb2Svc4MgeEOXl1TaxIrACexK6tSNbVW8gc8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent p-4 flex flex-col justify-end">
+<span class="font-label-md text-white text-[12px] opacity-80 uppercase tracking-tighter">Patience</span>
+<p class="font-spiritual-text text-white text-sm leading-tight">The beauty of waiting</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface/80 glass-nav rounded-t-[32px] shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-all p-2 rounded-2xl group">
+<span class="material-symbols-outlined text-[24px] group-active:scale-95 duration-150">home</span>
+<span class="font-label-md text-[10px] mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-all p-2 rounded-2xl group">
+<span class="material-symbols-outlined text-[24px] group-active:scale-95 duration-150">menu_book</span>
+<span class="font-label-md text-[10px] mt-1">Quran</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-all p-2 rounded-2xl group">
+<span class="material-symbols-outlined text-[24px] group-active:scale-95 duration-150">auto_graph</span>
+<span class="font-label-md text-[10px] mt-1">Salah</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-2 group shadow-sm">
+<span class="material-symbols-outlined text-[24px] group-active:scale-95 duration-150" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label-md text-[10px] mt-1">Wellness</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction for mood chips
+        const chips = document.querySelectorAll('.flex.gap-3 button');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => {
+                    c.classList.remove('bg-secondary-container', 'text-on-secondary-fixed', 'shadow-sm');
+                    c.classList.add('bg-white', 'border', 'border-outline-variant', 'text-on-surface-variant');
+                });
+                chip.classList.add('bg-secondary-container', 'text-on-secondary-fixed', 'shadow-sm');
+                chip.classList.remove('bg-white', 'border', 'border-outline-variant', 'text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

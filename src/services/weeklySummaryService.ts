@@ -1,7 +1,7 @@
 import { openUserDataDb } from './userDataDatabase';
 import { getLocalDayStr } from '../features/dailyGoal/streakService';
 import { auth } from '../lib/firebase';
-import { reflectionRepository } from './reflectionRepository';
+import { journalService } from './journalService';
 
 export interface WeeklySummary {
   quranGoalDays: number;
@@ -51,12 +51,24 @@ export const weeklySummaryService = {
     const salahCount = salahRows.length;
 
     // 3. Heart & Reflections
-    const reflections = await reflectionRepository.getReflectionsForDays(days);
-    const reflectionCount = reflections.length;
+    const allJournalEntries = await journalService.getEntries();
+    
+    // Filter to last 7 days
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    
+    const recentReflections = allJournalEntries.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= weekAgo;
+    });
+
+    const reflectionCount = recentReflections.length;
 
     const topicCounts: Record<string, number> = {};
-    for (const ref of reflections) {
-      topicCounts[ref.topic] = (topicCounts[ref.topic] || 0) + 1;
+    for (const ref of recentReflections) {
+      // Use the title as the 'topic' for the summary
+      const topic = ref.title || 'Reflection';
+      topicCounts[topic] = (topicCounts[topic] || 0) + 1;
     }
 
     const topTopics = Object.entries(topicCounts)

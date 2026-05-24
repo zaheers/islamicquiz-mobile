@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
@@ -16,6 +9,7 @@ import { AnswerCard } from '../components/AnswerCard';
 import { SurahReferenceCard } from '../components/SurahReferenceCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveNoorHistory } from '../services/noorHistoryService';
+import { ScreenContainer } from '@/components/ui/ScreenContainer';
 
 export const AnswerScreen = ({ route, navigation }: any) => {
   const { question, result } = route.params;
@@ -29,7 +23,6 @@ export const AnswerScreen = ({ route, navigation }: any) => {
       const historyJson = await AsyncStorage.getItem('noor_history');
       let history = historyJson ? JSON.parse(historyJson) : [];
       
-      // Add new item at the beginning
       const newItem = {
         question,
         date: new Date().toLocaleDateString('en-US', {
@@ -42,16 +35,13 @@ export const AnswerScreen = ({ route, navigation }: any) => {
         result,
       };
       
-      // Filter out duplicate questions
       history = history.filter((item: any) => item.question !== question);
       history.unshift(newItem);
       
-      // Keep only last 50 items
       if (history.length > 50) history.pop();
       
       await AsyncStorage.setItem('noor_history', JSON.stringify(history));
 
-      // Also persist to SQLite for the History tab
       try {
         const answerText = typeof result.answer === 'string' ? result.answer : JSON.stringify(result.answer);
         await saveNoorHistory(question, answerText);
@@ -85,15 +75,15 @@ export const AnswerScreen = ({ route, navigation }: any) => {
   }, [result.tafsir]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ChevronLeft size={28} color={colors.text} />
+          <ChevronLeft size={28} color={colors.sg.onSurface} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Noor AI Response</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <QuestionCard question={question} />
         <AnswerCard answer={result.answer} />
 
@@ -127,33 +117,35 @@ export const AnswerScreen = ({ route, navigation }: any) => {
           );
         })}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.sg.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing.m,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.sg.surfaceContainerLowest,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
   backButton: {
     padding: spacing.s,
   },
   headerTitle: {
-    ...typography.h3,
+    ...typography.sg.headlineLgMobile,
+    fontSize: 22,
     marginLeft: spacing.s,
-    color: colors.text,
+    color: colors.sg.primary,
   },
   content: {
     padding: spacing.m,
+    paddingBottom: spacing.xxl * 2,
   },
   referencesHeader: {
     marginTop: spacing.l,
@@ -162,7 +154,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   referencesTitle: {
-    ...typography.h3,
-    color: colors.text,
+    ...typography.sg.headlineLgMobile,
+    fontSize: 24,
+    color: colors.sg.onSurface,
   },
 });

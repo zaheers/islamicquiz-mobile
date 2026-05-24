@@ -14,14 +14,16 @@ import {
   Text,
   View,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { ChevronLeft, Play, Pause, BookOpen } from 'lucide-react-native';
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { quranService } from '../services/quranService';
+import { colors } from '@/theme/colors';
+import { typography } from '@/theme/typography';
+import { ScreenContainer } from '@/components/ui/ScreenContainer';
+import { SpiritualCard } from '@/components/ui/SpiritualCard';
 
 const PAD = (n: number) => n.toString().padStart(3, '0');
 
@@ -74,7 +76,6 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
 
   const loadAyah = async () => {
     if (!surahNumber || !ayahNumber) {
-      // Fallback: use what's in the verse object
       setAyahData({
         arabic: verse?.text || verse?.arabic || '',
         translation: verse?.translation || verse?.text_translation || verse?.content || '',
@@ -97,7 +98,6 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
         audioUrl: `https://everyayah.com/data/Alafasy_128kbps/${PAD(audioSurah)}${PAD(audioAyah)}.mp3`,
       });
     } catch (e) {
-      // Graceful fallback
       setAyahData({
         arabic: verse?.text || verse?.arabic || '',
         translation: verse?.translation || verse?.text_translation || verse?.content || '',
@@ -134,7 +134,6 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
       return;
     }
 
-    // Load fresh
     setAudioLoading(true);
     try {
       const { sound } = await Audio.Sound.createAsync(
@@ -159,18 +158,17 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
+    <ScreenContainer style={styles.safeArea}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#1A3D2F" />
+          <ChevronLeft size={24} color={colors.sg.primary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{surahDisplayName}</Text>
           <Text style={styles.headerSub}>Verse {ayahNumber}</Text>
         </View>
         <View style={styles.headerRight}>
-          <BookOpen size={20} color="#059669" />
+          <BookOpen size={20} color={colors.sg.secondary} />
         </View>
       </View>
 
@@ -181,24 +179,20 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
       >
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#059669" />
+            <ActivityIndicator size="large" color={colors.sg.primary} />
             <Text style={styles.loadingText}>Loading verse...</Text>
           </View>
         ) : (
           <>
-            {/* Surah label chip */}
             <View style={styles.labelRow}>
               <View style={styles.chip}>
                 <Text style={styles.chipText}>{surahDisplayName} · {ayahNumber}</Text>
               </View>
             </View>
 
-            {/* Verse Card */}
-            <View style={styles.verseCard}>
-              {/* Decorative top bar */}
+            <SpiritualCard style={styles.verseCard}>
               <View style={styles.cardTopBar} />
 
-              {/* Arabic Text */}
               {ayahData?.arabic ? (
                 <View style={styles.arabicSection}>
                   <Text style={styles.arabicText} allowFontScaling numberOfLines={0}>
@@ -207,99 +201,89 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
                 </View>
               ) : null}
 
-              {/* Divider */}
               {ayahData?.arabic && (ayahData?.transliteration || ayahData?.translation) ? (
                 <View style={styles.divider} />
               ) : null}
 
-              {/* Transliteration */}
               {cleanText(ayahData?.transliteration) ? (
                 <Text style={styles.transliterationText} numberOfLines={0}>
                   {cleanText(ayahData.transliteration)}
                 </Text>
               ) : null}
 
-              {/* Translation */}
               {cleanText(ayahData?.translation) ? (
                 <Text style={styles.translationText} numberOfLines={0}>
                   {cleanText(ayahData.translation)}
                 </Text>
               ) : null}
-            </View>
+            </SpiritualCard>
 
-            {/* Audio Row */}
             {ayahData?.audioUrl ? (
-              <TouchableOpacity style={styles.audioRow} onPress={toggleAudio} activeOpacity={0.8}>
-                <View style={styles.audioIcon}>
-                  {audioLoading
-                    ? <ActivityIndicator size="small" color="#fff" />
-                    : isPlaying
-                    ? <Pause size={18} color="#fff" fill="#fff" />
-                    : <Play size={18} color="#fff" fill="#fff" style={{ marginLeft: 2 }} />
-                  }
-                </View>
-                <Text style={styles.audioText}>
-                  {audioLoading ? 'Loading recitation...' : isPlaying ? 'Pause Recitation' : 'Play Recitation'}
-                </Text>
-                <Text style={styles.reciterName}>Alafasy</Text>
+              <TouchableOpacity onPress={toggleAudio} activeOpacity={0.8}>
+                <SpiritualCard style={styles.audioRow}>
+                  <View style={styles.audioIcon}>
+                    {audioLoading
+                      ? <ActivityIndicator size="small" color={colors.sg.onPrimary} />
+                      : isPlaying
+                      ? <Pause size={18} color={colors.sg.onPrimary} fill={colors.sg.onPrimary} />
+                      : <Play size={18} color={colors.sg.onPrimary} fill={colors.sg.onPrimary} style={{ marginLeft: 2 }} />
+                    }
+                  </View>
+                  <Text style={styles.audioText}>
+                    {audioLoading ? 'Loading recitation...' : isPlaying ? 'Pause Recitation' : 'Play Recitation'}
+                  </Text>
+                  <Text style={styles.reciterName}>Alafasy</Text>
+                </SpiritualCard>
               </TouchableOpacity>
             ) : null}
 
-            {/* Tafsir Section */}
             {tafsirContent ? (
-              <View style={styles.tafsirCard}>
+              <SpiritualCard style={styles.tafsirCard}>
                 <View style={styles.tafsirHeader}>
                   <Text style={styles.tafsirLabel}>📖  Tafsir Explanation</Text>
                 </View>
                 <Text style={styles.tafsirText}>{tafsirContent}</Text>
-              </View>
+              </SpiritualCard>
             ) : null}
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F4F6F5',
+    backgroundColor: colors.sg.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.sg.surfaceContainerLowest,
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
   backBtn: {
     padding: 8,
     borderRadius: 12,
-    backgroundColor: '#F0FDF4',
+    backgroundColor: colors.sg.surfaceContainerHighest,
   },
   headerCenter: {
     flex: 1,
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A3D2F',
-    letterSpacing: 0.3,
+    ...typography.sg.headlineLgMobile,
+    fontSize: 22,
+    color: colors.sg.primary,
   },
   headerSub: {
-    fontSize: 12,
-    color: '#059669',
-    fontWeight: '500',
+    ...typography.sg.labelMd,
+    color: colors.sg.secondary,
     marginTop: 2,
-    letterSpacing: 0.5,
   },
   headerRight: {
     padding: 8,
@@ -320,8 +304,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: '#6B7280',
-    fontSize: 14,
+    color: colors.sg.outline,
+    ...typography.sg.bodyMd,
   },
   labelRow: {
     flexDirection: 'row',
@@ -330,142 +314,108 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   chip: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: colors.sg.secondaryContainer,
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: colors.sg.secondaryFixed,
   },
   chipText: {
-    color: '#065F46',
-    fontWeight: '600',
+    color: colors.sg.onSecondaryContainer,
+    ...typography.sg.labelMd,
     fontSize: 13,
-    letterSpacing: 0.4,
   },
   verseCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    padding: 0,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
     marginBottom: 16,
   },
   cardTopBar: {
     height: 4,
-    backgroundColor: '#059669',
+    backgroundColor: colors.sg.primary,
   },
   arabicSection: {
-    backgroundColor: '#F0FDF4',
+    backgroundColor: colors.sg.surfaceContainerHighest,
     padding: 24,
   },
   arabicText: {
     fontSize: 28,
     fontWeight: '500',
-    color: '#1A3D2F',
+    color: colors.sg.onSurface,
     textAlign: 'right',
     lineHeight: 48,
     writingDirection: 'rtl',
     fontFamily: 'KFGQPCHafs',
-    letterSpacing: 0.5,
     flexShrink: 1,
   },
   divider: {
     height: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.sg.surfaceContainerHigh,
     marginHorizontal: 20,
   },
   transliterationText: {
-    fontSize: 16,
+    ...typography.sg.bodyMd,
     fontStyle: 'italic',
-    color: '#6B7280',
+    color: colors.sg.outline,
     textAlign: 'left',
     paddingHorizontal: 20,
     paddingTop: 14,
-    lineHeight: 26,
-    fontFamily: 'NotoSans',
     flexShrink: 1,
   },
   translationText: {
+    ...typography.sg.spiritualText,
     fontSize: 18,
-    color: '#2F4F4F',
+    color: colors.sg.primary,
     textAlign: 'left',
     paddingHorizontal: 20,
     paddingTop: 14,
     paddingBottom: 24,
-    lineHeight: 30,
-    fontFamily: 'RobotoSerif',
-    letterSpacing: 0.2,
     flexShrink: 1,
   },
-
-  // Audio Row
   audioRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#D1FAE5',
   },
   audioIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#059669',
+    backgroundColor: colors.sg.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
   },
   audioText: {
     flex: 1,
-    fontSize: 15,
-    color: '#1A3D2F',
+    ...typography.sg.bodyLg,
     fontWeight: '600',
+    color: colors.sg.primary,
   },
   reciterName: {
-    fontSize: 12,
-    color: '#6B7280',
+    ...typography.sg.labelMd,
+    color: colors.sg.outline,
     fontStyle: 'italic',
   },
-
-  // Tafsir Card
   tafsirCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
+    padding: 0,
     marginBottom: 20,
   },
   tafsirHeader: {
-    backgroundColor: '#F0FDF4',
+    backgroundColor: colors.sg.surfaceContainerHighest,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#D1FAE5',
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
   tafsirLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#059669',
-    letterSpacing: 0.4,
+    ...typography.sg.labelMd,
+    color: colors.sg.primary,
   },
   tafsirText: {
-    fontSize: 15,
-    color: '#374151',
-    lineHeight: 26,
+    ...typography.sg.bodyMd,
+    color: colors.sg.onSurface,
     padding: 20,
   },
 });

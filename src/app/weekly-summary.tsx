@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
+import { SpiritualCard } from '@/components/ui/SpiritualCard';
 import { colors } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 import { spacing } from '@/theme/spacing';
 import { weeklySummaryService, WeeklySummary } from '@/services/weeklySummaryService';
 import { BookOpen, HeartPulse, Activity } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 export default function WeeklySummaryScreen() {
@@ -35,16 +36,16 @@ export default function WeeklySummaryScreen() {
             
             {loading ? (
                 <View style={styles.center}>
-                    <ActivityIndicator size="large" color={colors.primary} />
+                    <ActivityIndicator size="large" color={colors.sg.primary} />
                 </View>
             ) : summary ? (
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                     
                     {/* Quran Habits Card */}
-                    <LinearGradient colors={['#ffffff', '#f8fafc']} style={styles.card}>
+                    <SpiritualCard featured>
                         <View style={styles.cardHeader}>
-                            <View style={[styles.iconContainer, { backgroundColor: '#e0f2fe' }]}>
-                                <BookOpen size={24} color="#0284c7" />
+                            <View style={[styles.iconContainer, { backgroundColor: colors.sg.surfaceContainerHighest }]}>
+                                <BookOpen size={24} color={colors.sg.primary} />
                             </View>
                             <Text style={styles.cardTitle}>Qur'an Habits</Text>
                         </View>
@@ -54,30 +55,30 @@ export default function WeeklySummaryScreen() {
                         <Text style={styles.statText}>
                             Current streak: <Text style={styles.highlight}>{summary.currentQuranStreak}</Text> days.
                         </Text>
-                    </LinearGradient>
+                    </SpiritualCard>
 
                     {/* Salah Habits Card */}
-                    <LinearGradient colors={['#ffffff', '#f8fafc']} style={styles.card}>
+                    <SpiritualCard>
                         <View style={styles.cardHeader}>
-                            <View style={[styles.iconContainer, { backgroundColor: '#e0e7ff' }]}>
-                                <Activity size={24} color="#4338ca" />
+                            <View style={[styles.iconContainer, { backgroundColor: colors.sg.surfaceContainerHighest }]}>
+                                <Activity size={24} color={colors.sg.primary} />
                             </View>
                             <Text style={styles.cardTitle}>Salah Habits</Text>
                         </View>
                         <Text style={styles.statText}>
                             You logged <Text style={styles.highlight}>{summary.salahCount}</Text> prayers in the last 7 days.
                         </Text>
-                    </LinearGradient>
+                    </SpiritualCard>
 
                     {/* Heart & Reflections Card */}
                     <TouchableOpacity 
                         activeOpacity={0.8}
-                        onPress={() => router.push('/reflections-list' as any)}
+                        onPress={() => router.push('/journal' as any)}
                     >
-                        <LinearGradient colors={['#ffffff', '#f8fafc']} style={styles.card}>
+                        <SpiritualCard>
                             <View style={styles.cardHeader}>
-                                <View style={[styles.iconContainer, { backgroundColor: '#dcfce7' }]}>
-                                    <HeartPulse size={24} color="#15803d" />
+                                <View style={[styles.iconContainer, { backgroundColor: colors.sg.surfaceContainerHighest }]}>
+                                    <HeartPulse size={24} color={colors.sg.primary} />
                                 </View>
                                 <Text style={styles.cardTitle}>Heart & Reflections</Text>
                             </View>
@@ -94,10 +95,10 @@ export default function WeeklySummaryScreen() {
                                     ))}
                                 </View>
                             )}
-                            <Text style={{ marginTop: 16, fontSize: 13, color: '#15803d', fontWeight: '600', textAlign: 'center' }}>
+                            <Text style={{ marginTop: 16, ...typography.sg.labelMd, color: colors.sg.secondary, textAlign: 'center' }}>
                                 Tap to view all reflections
                             </Text>
-                        </LinearGradient>
+                        </SpiritualCard>
                     </TouchableOpacity>
 
                 </ScrollView>
@@ -111,72 +112,15 @@ export default function WeeklySummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f1f5f9',
-    },
-    center: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    scrollContent: {
-        padding: spacing.l,
-        paddingBottom: spacing.xxl * 2,
-        gap: 16,
-    },
-    card: {
-        borderRadius: 20,
-        padding: 24,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        marginBottom: 20,
-    },
-    iconContainer: {
-        padding: 10,
-        borderRadius: 12,
-    },
-    cardTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: '#1e293b',
-    },
-    statText: {
-        fontSize: 16,
-        color: '#475569',
-        lineHeight: 24,
-        marginBottom: 8,
-    },
-    highlight: {
-        fontWeight: '800',
-        color: '#0f172a',
-    },
-    topicsList: {
-        marginTop: 12,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#f1f5f9',
-    },
-    topicsListTitle: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#64748b',
-        marginBottom: 8,
-    },
-    topicItem: {
-        fontSize: 15,
-        color: '#475569',
-        marginBottom: 4,
-        paddingLeft: 4,
-    }
+    container: { flex: 1, backgroundColor: colors.sg.background },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    scrollContent: { padding: spacing.l, paddingBottom: spacing.xxl * 2, gap: 16 },
+    cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+    iconContainer: { padding: 10, borderRadius: 12 },
+    cardTitle: { ...typography.sg.headlineLgMobile, color: colors.sg.primary, fontSize: 22 },
+    statText: { ...typography.sg.bodyMd, color: colors.sg.onSurfaceVariant, marginBottom: 8 },
+    highlight: { ...typography.sg.bodyLg, fontWeight: '700', color: colors.sg.onSurface },
+    topicsList: { marginTop: 12, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.sg.surfaceContainerHigh },
+    topicsListTitle: { ...typography.sg.labelMd, color: colors.sg.outline, marginBottom: 8 },
+    topicItem: { ...typography.sg.bodyMd, color: colors.sg.onSurfaceVariant, marginBottom: 4, paddingLeft: 4 }
 });

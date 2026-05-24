@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Card } from './ui/Card';
+import { SpiritualCard } from './ui/SpiritualCard';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
@@ -11,12 +11,12 @@ interface QuestionCardProps {
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   return (
-    <Card style={styles.container}>
-      <Text style={styles.label}>Question Card</Text>
+    <SpiritualCard style={styles.container}>
+      <Text style={styles.label}>Your Question</Text>
       <Text style={styles.question}>
         {typeof question === 'string' ? question : JSON.stringify(question)}
       </Text>
-    </Card>
+    </SpiritualCard>
   );
 };
 
@@ -24,14 +24,16 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.m,
     padding: spacing.l,
+    backgroundColor: colors.sg.surfaceContainerLowest,
   },
   label: {
-    ...typography.label,
-    color: colors.textSecondary,
+    ...typography.sg.labelMd,
+    color: colors.sg.secondary,
     marginBottom: spacing.xs,
   },
   question: {
-    ...typography.h3,
-    color: colors.textBody,
+    ...typography.sg.headlineLgMobile,
+    fontSize: 22,
+    color: colors.sg.primary,
   },
 });

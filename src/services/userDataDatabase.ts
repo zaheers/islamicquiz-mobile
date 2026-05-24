@@ -78,6 +78,7 @@ export async function openUserDataDb(): Promise<SQLite.SQLiteDatabase> {
       status TEXT NOT NULL DEFAULT 'pending', -- 'prayed' | 'missed' | 'pending'
       khushu INTEGER,                         -- 1 to 5
       reflection TEXT,                        -- Optional reflection text
+      sunnah_rawatib_units INTEGER DEFAULT 0, -- Track sunnah units per prayer
       marked_at TEXT,                         -- ISO string when user toggled
       updated_at TEXT NOT NULL
     );
@@ -97,6 +98,13 @@ export async function openUserDataDb(): Promise<SQLite.SQLiteDatabase> {
 
     CREATE UNIQUE INDEX IF NOT EXISTS idx_salah_streaks_user_prayer
       ON salah_streaks(user_id, prayer_name);
+
+    CREATE TABLE IF NOT EXISTS mindfulness_journal (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      entry_type TEXT NOT NULL,               -- 'journal' | 'blessing'
+      content TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
 
     CREATE TABLE IF NOT EXISTS reflections (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -131,6 +139,13 @@ export async function openUserDataDb(): Promise<SQLite.SQLiteDatabase> {
     try {
       await db.execAsync(`
         ALTER TABLE user_goal_settings ADD COLUMN push_token TEXT;
+      `);
+    } catch(e) { /* Ignore if exists */ }
+
+    // Migration for Sunnah Rawatib
+    try {
+      await db.execAsync(`
+        ALTER TABLE salah_daily_log ADD COLUMN sunnah_rawatib_units INTEGER DEFAULT 0;
       `);
     } catch(e) { /* Ignore if exists */ }
 

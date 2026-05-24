@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, Pressable } from 'react-native';
-import { Card } from './ui/Card';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SpiritualCard } from './ui/SpiritualCard';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
@@ -15,21 +15,23 @@ export const SuggestedQuestionCard: React.FC<SuggestedQuestionCardProps> = ({
   onPress,
 }) => {
   return (
-    <Card style={styles.container} onPress={onPress} variant="elevated">
-      <Text style={styles.question}>{question}</Text>
-    </Card>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.container}>
+      <SpiritualCard style={styles.card}>
+        <Text style={styles.question}>{question}</Text>
+      </SpiritualCard>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.s,
+  },
+  card: {
     padding: spacing.m,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   question: {
-    ...typography.body,
-    color: colors.textBody,
+    ...typography.sg.bodyMd,
+    color: colors.sg.onSurface,
   },
 });

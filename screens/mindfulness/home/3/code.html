@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Al-Noor AI Reflection</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Libre+Caslon+Text:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-dim": "#d0dbed",
+                  "on-primary-fixed-variant": "#0b513d",
+                  "on-secondary-container": "#745c00",
+                  "error-container": "#ffdad6",
+                  "on-secondary-fixed-variant": "#574500",
+                  "inverse-surface": "#27313f",
+                  "surface-container-high": "#dee9fc",
+                  "on-background": "#121c2a",
+                  "outline": "#707974",
+                  "secondary": "#735c00",
+                  "primary": "#003527",
+                  "surface-container-highest": "#d9e3f6",
+                  "surface": "#f8f9ff",
+                  "secondary-fixed-dim": "#e9c349",
+                  "primary-container": "#064e3b",
+                  "on-error-container": "#93000a",
+                  "background": "#f8f9ff",
+                  "on-tertiary-fixed-variant": "#474743",
+                  "secondary-fixed": "#ffe088",
+                  "secondary-container": "#fed65b",
+                  "on-secondary-fixed": "#241a00",
+                  "on-primary": "#ffffff",
+                  "on-surface": "#121c2a",
+                  "on-primary-container": "#80bea6",
+                  "inverse-primary": "#95d3ba",
+                  "surface-variant": "#d9e3f6",
+                  "surface-container-low": "#eff4ff",
+                  "surface-tint": "#2b6954",
+                  "tertiary-fixed": "#e5e2dd",
+                  "on-error": "#ffffff",
+                  "tertiary-fixed-dim": "#c9c6c2",
+                  "inverse-on-surface": "#eaf1ff",
+                  "outline-variant": "#bfc9c3",
+                  "surface-bright": "#f8f9ff",
+                  "on-tertiary-container": "#b3b1ad",
+                  "on-primary-fixed": "#002117",
+                  "primary-fixed": "#b0f0d6",
+                  "tertiary": "#2e2e2b",
+                  "surface-container-lowest": "#ffffff",
+                  "primary-fixed-dim": "#95d3ba",
+                  "on-tertiary": "#ffffff",
+                  "on-surface-variant": "#404944",
+                  "on-secondary": "#ffffff",
+                  "tertiary-container": "#454441",
+                  "surface-container": "#e6eeff",
+                  "error": "#ba1a1a",
+                  "on-tertiary-fixed": "#1c1c19"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "gutter": "16px",
+                  "unit": "8px",
+                  "section-gap": "48px",
+                  "container-margin": "24px"
+          },
+          "fontFamily": {
+                  "label-md": ["Manrope"],
+                  "spiritual-text": ["Libre Caslon Text"],
+                  "headline-lg": ["Libre Caslon Text"],
+                  "body-lg": ["Manrope"],
+                  "body-md": ["Manrope"],
+                  "display-lg": ["Libre Caslon Text"],
+                  "headline-lg-mobile": ["Libre Caslon Text"]
+          },
+          "fontSize": {
+                  "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "spiritual-text": ["20px", {"lineHeight": "32px", "fontWeight": "400"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                  "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+    .bottom-sheet-transition {
+      transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .scrim-transition {
+      transition: opacity 0.4s ease;
+    }
+    .gold-accent {
+      background: linear-gradient(90deg, transparent, #fed65b, transparent);
+      height: 1px;
+      width: 100%;
+    }
+    body {
+      background-color: #F5F2ED; /* The Sand background mentioned in guidance */
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface overflow-hidden">
+<!-- Main Background Page (AI Landing Page - Dimmed) -->
+<main class="min-h-screen flex flex-col relative">
+<!-- Top Bar Component -->
+<header class="fixed top-0 left-0 w-full z-40 bg-surface/80 backdrop-blur-md flex items-center justify-between px-gutter h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-extrabold tracking-tight">Al-Noor</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A high-quality portrait of a serene young woman with clear skin and a soft expression, looking into the distance. The lighting is bright and warm, reflecting a modern light-mode aesthetic. The background is a soft, out-of-focus garden at sunset, primarily featuring tones of emerald green and sandy beige to align with the tranquil spiritual brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbI3pcZXJsaV3pLq5sjSTm4pqL_jMk-rNRl579xD6QC5T19FSep-1gyzwGyrq_8yxBsMeq6EjhHVHfNe4qxlNZrcoRBTMwX1y579Yki7RCCNHxH8Jn5YEl7r8j1bnX4n_kZWZsbrAoAHczwiWEc3_u0zJ-d5OHdWQk4E_FNduzUE76vWO9bfjquCaKKitQ0krx1OP9Npt6U6kOAwbKya34pr7SjMfndySX_-6Wl4dy1zdX7lX5fCa7npJl7G93DafTrc2Vuz89MCU"/>
+</div>
+</header>
+<!-- Background Content (Simulating a focused AI Chat screen) -->
+<div class="flex-1 pt-24 px-container-margin pb-32">
+<div class="max-w-md mx-auto space-y-section-gap opacity-30 pointer-events-none">
+<div class="text-center">
+<span class="material-symbols-outlined text-primary text-5xl mb-4" data-icon="auto_awesome">auto_awesome</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Speak to Al-Noor AI</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Your spiritual companion for daily reflection.</p>
+</div>
+<div class="bg-surface p-6 rounded-xl shadow-sm border-l-2 border-secondary">
+<p class="font-spiritual-text text-spiritual-text text-on-surface italic">"Verily, in the remembrance of Allah do hearts find rest." (13:28)</p>
+</div>
+<!-- Input Area Placeholder -->
+<div class="mt-8 border-b border-outline-variant pb-2">
+<p class="text-on-surface-variant">How are you feeling today?</p>
+</div>
+</div>
+</div>
+<!-- Scrim / Backdrop -->
+<div class="fixed inset-0 bg-on-surface/40 z-50 scrim-transition opacity-100" id="scrim"></div>
+<!-- Bottom Sheet Container -->
+<div class="fixed inset-x-0 bottom-0 z-[60] bottom-sheet-transition translate-y-0 flex flex-col items-center" id="bottom-sheet">
+<!-- Swipe Handle -->
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full mb-3 shadow-sm"></div>
+<!-- Sheet Canvas -->
+<div class="w-full max-w-2xl bg-surface rounded-t-[32px] px-container-margin pt-6 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative">
+<!-- Header Section -->
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline-lg text-headline-lg text-primary">Grateful Reflection</h3>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-colors" id="close-btn">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Gold Accent Line -->
+<div class="gold-accent mb-8 opacity-40"></div>
+<!-- AI Response Content -->
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0 text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="sparkles" style="font-variation-settings: 'FILL' 1;">colors_spark</span>
+</div>
+<div class="flex-1 space-y-4">
+<p class="font-spiritual-text text-spiritual-text text-primary leading-relaxed">
+                        I see a beautiful light in your heart today. Even in the smallest moments of gratitude, there is a path to profound peace. 
+                    </p>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Let us take a moment together. What is one specific blessing that brought you a smile in the last few hours? It doesn't have to be grand; perhaps it was the warmth of the sun or a kind word from a stranger.
+                    </p>
+</div>
+</div>
+<!-- Reflection Choice Chips -->
+<div class="pt-4 flex flex-wrap gap-2">
+<button class="px-4 py-2 bg-secondary-fixed-dim/20 text-secondary font-label-md text-label-md rounded-full border border-secondary/20 hover:bg-secondary-fixed-dim/40 transition-all">
+                    A peaceful morning
+                </button>
+<button class="px-4 py-2 bg-secondary-fixed-dim/20 text-secondary font-label-md text-label-md rounded-full border border-secondary/20 hover:bg-secondary-fixed-dim/40 transition-all">
+                    A connection with family
+                </button>
+<button class="px-4 py-2 bg-secondary-fixed-dim/20 text-secondary font-label-md text-label-md rounded-full border border-secondary/20 hover:bg-secondary-fixed-dim/40 transition-all">
+                    An answered prayer
+                </button>
+</div>
+</div>
+<!-- Progress Indicator -->
+<div class="mt-12 flex items-center gap-4">
+<div class="flex-1 h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-1/3 h-full bg-secondary"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Reflection 1 of 3</span>
+</div>
+<!-- Primary Action -->
+<div class="mt-8">
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-label-md text-label-md shadow-md hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span>Continue Reflecting</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Component -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.04)] rounded-t-xl md:hidden opacity-30 pointer-events-none">
+<div class="flex justify-around items-center w-full px-4 pb-4 pt-2">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-md text-label-md">Quran</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">Salah</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary bg-secondary-container/50 rounded-full px-4 py-1">
+<span class="material-symbols-outlined" data-icon="self_improvement">self_improvement</span>
+<span class="font-label-md text-label-md">Wellness</span>
+</div>
+</div>
+</nav>
+</main>
+<script>
+    const bottomSheet = document.getElementById('bottom-sheet');
+    const scrim = document.getElementById('scrim');
+    const closeBtn = document.getElementById('close-btn');
+
+    function closeSheet() {
+      bottomSheet.classList.add('translate-y-full');
+      scrim.classList.remove('opacity-100');
+      scrim.classList.add('opacity-0');
+      setTimeout(() => {
+        scrim.classList.add('hidden');
+      }, 400);
+    }
+
+    closeBtn.addEventListener('click', closeSheet);
+    scrim.addEventListener('click', closeSheet);
+
+    // Initial micro-interaction: subtle entry bounce effect
+    window.addEventListener('load', () => {
+      bottomSheet.classList.add('translate-y-4');
+      setTimeout(() => {
+        bottomSheet.classList.remove('translate-y-4');
+        bottomSheet.classList.add('translate-y-0');
+      }, 100);
+    });
+
+    // Handle swipe logic (simplified)
+    let startY = 0;
+    bottomSheet.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+    });
+
+    bottomSheet.addEventListener('touchmove', (e) => {
+        let currentY = e.touches[0].clientY;
+        let deltaY = currentY - startY;
+        if (deltaY > 0) {
+            bottomSheet.style.transform = `translateY(${deltaY}px)`;
+        }
+    });
+
+    bottomSheet.addEventListener('touchend', (e) => {
+        let currentY = e.changedTouches[0].clientY;
+        let deltaY = currentY - startY;
+        if (deltaY > 150) {
+            closeSheet();
+        } else {
+            bottomSheet.style.transform = `translateY(0)`;
+        }
+    });
+  </script>
+</body></html>

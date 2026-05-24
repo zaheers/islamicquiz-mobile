@@ -4,11 +4,14 @@ import { openUserDataDb } from '@/services/userDataDatabase';
 import { notificationService } from '@/services/notificationService';
 import { firebaseSyncService } from '@/services/firebaseSyncService';
 import { useFonts } from 'expo-font';
+import { LibreCaslonText_400Regular, LibreCaslonText_700Bold } from '@expo-google-fonts/libre-caslon-text';
+import { Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold } from '@expo-google-fonts/manrope';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { LogBox } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Ignore specific warnings that trigger unnecessary red boxes in Expo Go
 LogBox.ignoreLogs([
@@ -28,6 +31,12 @@ export default function RootLayout() {
         'RobotoSerifItalic': require('../../assets/font/RobotoSerif-Italic.ttf'),
         'NotoSans':        require('../../assets/font/NotoSans-Regular.ttf'),
         'NotoSansMedium':  require('../../assets/font/NotoSans-Medium.ttf'),
+        LibreCaslonText_400Regular,
+        LibreCaslonText_700Bold,
+        Manrope_400Regular,
+        Manrope_500Medium,
+        Manrope_600SemiBold,
+        Manrope_700Bold,
     });
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [isDbReady, setIsDbReady] = useState(false);
@@ -85,7 +94,7 @@ export default function RootLayout() {
     }
 
     return (
-        <>
+        <GestureHandlerRootView style={{ flex: 1 }}>
             <Stack
                 screenOptions={{
                     headerShown: false,
@@ -104,6 +113,6 @@ export default function RootLayout() {
                 <Stack.Screen name="ask-my-day" />
             </Stack>
             <StatusBar style="dark" />
-        </>
+        </GestureHandlerRootView>
     );
 }

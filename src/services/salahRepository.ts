@@ -1,10 +1,10 @@
 import { openUserDataDb } from './userDataDatabase';
 import { getLocalDayStr, getYesterdayLocalDayStr } from '../features/dailyGoal/streakService';
 
-export type PrayerName = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+export type PrayerName = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' | 'duha' | 'tahajjud';
 export type PrayerStatus = 'prayed' | 'missed' | 'pending';
 
-export const PRAYER_NAMES: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+export const PRAYER_NAMES: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'duha', 'tahajjud'];
 
 export const PRAYER_DISPLAY: Record<PrayerName, { label: string; emoji: string; time: string }> = {
   fajr:    { label: 'Fajr',    emoji: '🌅', time: 'Dawn' },
@@ -12,6 +12,8 @@ export const PRAYER_DISPLAY: Record<PrayerName, { label: string; emoji: string; 
   asr:     { label: 'Asr',     emoji: '🌤️', time: 'Afternoon' },
   maghrib: { label: 'Maghrib', emoji: '🌇', time: 'Sunset' },
   isha:    { label: 'Isha',    emoji: '🌙', time: 'Night' },
+  duha:    { label: 'Duha',    emoji: '✨', time: 'Morning' },
+  tahajjud:{ label: 'Tahajjud',emoji: '🌌', time: 'Late Night' },
 };
 
 export interface SalahDayEntry {
@@ -19,6 +21,7 @@ export interface SalahDayEntry {
   status: PrayerStatus;
   khushu: number | null;
   reflection: string | null;
+  sunnah_rawatib_units: number;
   marked_at: string | null;
 }
 
@@ -38,7 +41,7 @@ export const salahRepository = {
     const db = await openUserDataDb();
 
     const rows = await db.getAllAsync<any>(
-      `SELECT prayer_name, status, khushu, reflection, marked_at FROM salah_daily_log
+      `SELECT prayer_name, status, khushu, reflection, sunnah_rawatib_units, marked_at FROM salah_daily_log
        WHERE user_id = ? AND local_day = ?`,
       [userId, localDay]
     );
@@ -50,16 +53,18 @@ export const salahRepository = {
         status: row.status,
         khushu: row.khushu,
         reflection: row.reflection,
+        sunnah_rawatib_units: row.sunnah_rawatib_units || 0,
         marked_at: row.marked_at,
       });
     }
 
-    // Return all 5, filling defaults
+    // Return all 7, filling defaults
     return PRAYER_NAMES.map((name) => map.get(name) || {
       prayer_name: name,
       status: 'pending' as PrayerStatus,
       khushu: null,
       reflection: null,
+      sunnah_rawatib_units: 0,
       marked_at: null,
     });
   },
@@ -240,6 +245,24 @@ export const salahRepository = {
   },
 
   /**
+   * Save Sunnah Rawatib units for a specific Fard prayer today.
+   */
+  async updateSunnahRawatibUnits(userId: string, prayerName: PrayerName, units: number): Promise<void> {
+    const db = await openUserDataDb();
+    const todayLocal = getLocalDayStr();
+    const now = new Date().toISOString();
+
+    await db.runAsync(
+      `INSERT INTO salah_daily_log (user_id, local_day, prayer_name, sunnah_rawatib_units, updated_at)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(user_id, local_day, prayer_name) DO UPDATE SET
+         sunnah_rawatib_units = excluded.sunnah_rawatib_units,
+         updated_at = excluded.updated_at`,
+      [userId, todayLocal, prayerName, units, now]
+    );
+  },
+
+  /**
    * Get logs for the last 7 days for history view.
    */
   async getLast7DaysLog(userId: string): Promise<Record<string, SalahDayEntry[]>> {
@@ -256,7 +279,7 @@ export const salahRepository = {
     const placeholders = days.map(() => '?').join(',');
     
     const rows = await db.getAllAsync<any>(
-      `SELECT local_day, prayer_name, status, khushu, reflection, marked_at FROM salah_daily_log
+      `SELECT local_day, prayer_name, status, khushu, reflection, sunnah_rawatib_units, marked_at FROM salah_daily_log
        WHERE user_id = ? AND local_day IN (${placeholders}) ORDER BY local_day DESC`,
       [userId, ...days]
     );
@@ -268,6 +291,7 @@ export const salahRepository = {
         status: 'pending',
         khushu: null,
         reflection: null,
+        sunnah_rawatib_units: 0,
         marked_at: null,
       }));
     }
@@ -282,6 +306,7 @@ export const salahRepository = {
             status: row.status,
             khushu: row.khushu,
             reflection: row.reflection,
+            sunnah_rawatib_units: row.sunnah_rawatib_units || 0,
             marked_at: row.marked_at,
           };
         }

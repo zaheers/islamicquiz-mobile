@@ -8,6 +8,7 @@ import {
   TextInput,
   Switch,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
@@ -15,13 +16,15 @@ import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { Card } from '@/components/ui/Card';
-import { Trash2, Info, Target, Bell } from 'lucide-react-native';
+import { Trash2, Info, Target, Bell, MapPin, ChevronRight } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 import { goalRepository, UserGoalSettings, GoalType } from '@/services/goalRepository';
 import { auth } from '@/lib/firebase';
 import { notificationService } from '@/services/notificationService';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const [settings, setSettings] = useState<UserGoalSettings | null>(null);
   const [targetValueStr, setTargetValueStr] = useState('10');
   const [hourStr, setHourStr] = useState('08');
@@ -128,6 +131,26 @@ export default function ProfileScreen() {
           </View>
         </Card>
 
+        <Text style={styles.sectionHeading}>Salah & Location</Text>
+        <Card style={styles.section}>
+          <TouchableOpacity 
+            style={styles.settingsRow} 
+            activeOpacity={0.7}
+            onPress={() => router.push('/salah-settings')}
+          >
+            <View style={styles.settingsIcon}>
+              <MapPin size={20} color={colors.primary} />
+            </View>
+            <View style={[styles.settingsBodyRow, { alignItems: 'center' }]}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.settingsLabel}>Prayer Time Settings</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary }}>Configure your city and calculation method</Text>
+              </View>
+              <ChevronRight size={20} color={colors.textSecondary} />
+            </View>
+          </TouchableOpacity>
+        </Card>
+
         <Text style={styles.sectionHeading}>Reminders</Text>
         <Card style={styles.section}>
           <View style={styles.settingsRow}>
@@ -220,7 +243,7 @@ export default function ProfileScreen() {
         </Card>
 
         <Card style={styles.section}>
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity style={styles.row} onPress={() => Linking.openURL('https://zaheerai.com/alnoor')}>
             <View style={[styles.iconContainer, { backgroundColor: colors.primary + '10' }]}>
               <Info size={20} color={colors.primary} />
             </View>

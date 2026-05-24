@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { Card } from './ui/Card';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { SpiritualCard } from './ui/SpiritualCard';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
@@ -26,28 +26,32 @@ export const SurahReferenceCard: React.FC<SurahReferenceCardProps> = ({
     : `Surah ${surahName}`;
 
   return (
-    <Card style={styles.container} onPress={onPress}>
-      <View style={styles.content}>
-        <View style={styles.iconContainer}>
-          <BookOpen size={20} color={colors.primary} />
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.container}>
+      <SpiritualCard style={styles.card}>
+        <View style={styles.content}>
+          <View style={styles.iconContainer}>
+            <BookOpen size={20} color={colors.sg.primary} />
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.reference}>
+              {displayName} ({surahNumber}:{ayahNumber})
+            </Text>
+            {referenceCount !== undefined && (
+              <Text style={styles.subtext}>{referenceCount} References</Text>
+            )}
+          </View>
+          <ChevronRight size={20} color={colors.sg.outline} />
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.reference}>
-            {displayName} ({surahNumber}:{ayahNumber})
-          </Text>
-          {referenceCount !== undefined && (
-            <Text style={styles.subtext}>{referenceCount} References</Text>
-          )}
-        </View>
-        <ChevronRight size={20} color={colors.textSecondary} />
-      </View>
-    </Card>
+      </SpiritualCard>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.s,
+  },
+  card: {
     padding: spacing.m,
   },
   content: {
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.primary + '10', // 10% opacity
+    backgroundColor: colors.sg.surfaceContainerHighest,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.m,
@@ -67,12 +71,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   reference: {
-    ...typography.bodyBold,
-    color: colors.textBody,
+    ...typography.sg.bodyLg,
+    fontWeight: '600',
+    color: colors.sg.onSurface,
   },
   subtext: {
-    ...typography.caption,
-    color: colors.textSecondary,
+    ...typography.sg.labelMd,
+    color: colors.sg.onSurfaceVariant,
     marginTop: 2,
   },
 });

@@ -40,4 +40,14 @@ export const typography = {
         fontSize: 16,
         fontWeight: '600' as '600',
     },
+
+    sg: {
+        headlineLgMobile: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 28, lineHeight: 36, fontWeight: '400' as '400' },
+        headlineLg: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 32, lineHeight: 40, fontWeight: '400' as '400' },
+        displayLg: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 48, lineHeight: 56, letterSpacing: -0.96, fontWeight: '400' as '400' },
+        spiritualText: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 20, lineHeight: 32, fontWeight: '400' as '400' },
+        labelMd: { fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, letterSpacing: 0.7, fontWeight: '600' as '600' },
+        bodyLg: { fontFamily: 'Manrope_400Regular', fontSize: 18, lineHeight: 28, fontWeight: '400' as '400' },
+        bodyMd: { fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 24, fontWeight: '400' as '400' }
+    }
 };

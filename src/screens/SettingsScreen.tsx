@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
   TextInput,
@@ -13,12 +12,13 @@ import {
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
-import { Card } from '../components/ui/Card';
+import { SpiritualCard } from '../components/ui/SpiritualCard';
 import { Trash2, Info, Target, Bell } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { goalRepository, UserGoalSettings, GoalType } from '../services/goalRepository';
 import { auth } from '../lib/firebase';
 import { notificationService } from '../services/notificationService';
+import { ScreenContainer } from '@/components/ui/ScreenContainer';
 
 export const SettingsScreen = () => {
   const [settings, setSettings] = useState<UserGoalSettings | null>(null);
@@ -81,17 +81,17 @@ export const SettingsScreen = () => {
   if (!settings) return null;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionHeading}>Daily Goal</Text>
-        <Card style={styles.section}>
+        <SpiritualCard style={styles.section}>
           <View style={styles.settingsRow}>
             <View style={styles.settingsIcon}>
-              <Target size={20} color={colors.primary} />
+              <Target size={20} color={colors.sg.primary} />
             </View>
             <View style={styles.settingsBody}>
               <Text style={styles.settingsLabel}>Goal Type</Text>
@@ -128,19 +128,21 @@ export const SettingsScreen = () => {
               />
             </View>
           </View>
-        </Card>
+        </SpiritualCard>
 
         <Text style={styles.sectionHeading}>Reminders</Text>
-        <Card style={styles.section}>
+        <SpiritualCard style={styles.section}>
           <View style={styles.settingsRow}>
             <View style={styles.settingsIcon}>
-              <Bell size={20} color="#F59E0B" />
+              <Bell size={20} color={colors.sg.secondary} />
             </View>
             <View style={styles.settingsBodyRow}>
               <Text style={styles.settingsLabel}>Daily Reminder</Text>
               <Switch
                 value={settings.reminder_enabled}
                 onValueChange={(val) => handleSaveSettings({ reminder_enabled: val })}
+                trackColor={{ false: colors.sg.surfaceContainerHigh, true: colors.sg.primaryFixed }}
+                thumbColor={settings.reminder_enabled ? colors.sg.primary : colors.sg.surfaceContainerHighest}
               />
             </View>
           </View>
@@ -165,7 +167,7 @@ export const SettingsScreen = () => {
                       handleSaveSettings({ reminder_hour: h });
                     }}
                   />
-                  <Text>:</Text>
+                  <Text style={{ color: colors.sg.onSurface }}>:</Text>
                   <TextInput
                     style={[styles.textInput, { width: 60 }]}
                     keyboardType="number-pad"
@@ -184,57 +186,57 @@ export const SettingsScreen = () => {
               </View>
             </View>
           )}
-        </Card>
+        </SpiritualCard>
 
         <Text style={styles.sectionHeading}>Data</Text>
-        <Card style={styles.section}>
+        <SpiritualCard style={styles.section}>
           <TouchableOpacity style={styles.row} onPress={handleClearHistory}>
-            <View style={[styles.iconContainer, { backgroundColor: colors.error + '10' }]}>
-              <Trash2 size={20} color={colors.error} />
+            <View style={[styles.iconContainer, { backgroundColor: colors.sg.errorContainer }]}>
+              <Trash2 size={20} color={colors.sg.error} />
             </View>
-            <Text style={[styles.rowText, { color: colors.error }]}>Clear History</Text>
+            <Text style={[styles.rowText, { color: colors.sg.error }]}>Clear History</Text>
           </TouchableOpacity>
-        </Card>
+        </SpiritualCard>
 
-        <Card style={styles.section}>
+        <SpiritualCard style={styles.section}>
           <TouchableOpacity style={styles.row}>
-            <View style={[styles.iconContainer, { backgroundColor: colors.primary + '10' }]}>
-              <Info size={20} color={colors.primary} />
+            <View style={[styles.iconContainer, { backgroundColor: colors.sg.surfaceContainerHighest }]}>
+              <Info size={20} color={colors.sg.primary} />
             </View>
             <Text style={styles.rowText}>About Noor AI</Text>
           </TouchableOpacity>
-        </Card>
+        </SpiritualCard>
 
         <View style={styles.versionContainer}>
           <Text style={styles.versionText}>Version 1.0.0</Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.sg.background,
   },
   header: {
     padding: spacing.l,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.sg.surfaceContainerLowest,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
   headerTitle: {
-    ...typography.h1,
-    color: colors.text,
+    ...typography.sg.headlineLgMobile,
+    fontSize: 28,
+    color: colors.sg.primary,
   },
   content: {
     padding: spacing.m,
   },
   sectionHeading: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textSecondary,
+    ...typography.sg.labelMd,
+    color: colors.sg.outline,
     marginBottom: 8,
     marginTop: 16,
     textTransform: 'uppercase',
@@ -249,7 +251,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: spacing.l,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
   settingsBodyRow: {
     flex: 1,
@@ -266,21 +268,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingsLabel: {
-    ...typography.bodyBold,
-    color: colors.text,
+    ...typography.sg.bodyLg,
+    fontWeight: '600',
+    color: colors.sg.onSurface,
     marginBottom: 8,
   },
   textInput: {
+    ...typography.sg.bodyMd,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.sg.outlineVariant,
     borderRadius: 8,
     padding: 10,
-    fontSize: 16,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.sg.surface,
+    color: colors.sg.onSurface,
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.sg.surfaceContainer,
     borderRadius: 8,
     padding: 4,
   },
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   segmentActive: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.sg.surfaceContainerLowest,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -299,12 +303,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   segmentText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
+    ...typography.sg.labelMd,
+    color: colors.sg.onSurfaceVariant,
   },
   segmentTextActive: {
-    color: colors.primary,
+    color: colors.sg.primary,
   },
   row: {
     flexDirection: 'row',
@@ -320,8 +323,9 @@ const styles = StyleSheet.create({
     marginRight: spacing.m,
   },
   rowText: {
-    ...typography.bodyBold,
-    color: colors.text,
+    ...typography.sg.bodyLg,
+    fontWeight: '600',
+    color: colors.sg.onSurface,
   },
   versionContainer: {
     marginTop: spacing.xl,
@@ -329,7 +333,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   versionText: {
-    ...typography.caption,
-    color: colors.textSecondary,
+    ...typography.sg.labelMd,
+    color: colors.sg.outline,
   },
 });

@@ -9,6 +9,8 @@ import RenderHTML from 'react-native-render-html';
 import { Ayah, quranService, Surah } from '../services/quranService';
 import { storageService, Bookmark as BookmarkType, HistoryEntry } from '@/services/storageService';
 import { incrementDailyGoal } from '@/features/dailyGoal/useDailyGoal';
+import { colors } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 const { width } = Dimensions.get('window');
 
@@ -26,21 +28,21 @@ const tajweedClassesStyles = {
 
 const tajweedTagsStyles = {
     span: { 
-        fontSize: 34, 
+        fontSize: 38, 
         lineHeight: Platform.OS === 'ios' ? 70 : 85, 
         textAlign: 'center', 
         fontFamily: 'KFGQPCHafs',
-        color: '#1c1917'
+        color: '#121c2a'
     }
 };
 
 const translitTagsStyles = {
     body: {
-        color: '#71717a',
+        color: '#404944',
         fontSize: 16,
         textAlign: 'center',
         lineHeight: 24,
-        fontFamily: 'NotoSans',
+        fontFamily: 'Manrope_400Regular',
     }
 };
 
@@ -354,12 +356,12 @@ export default function QuranReciterScreen() {
                 <Stack.Screen options={{ headerShown: false }} />
                 
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}><ChevronLeft size={24} color="#57534e" /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}><ChevronLeft size={24} color={colors.sg.primary} /></TouchableOpacity>
                     <View style={styles.headerTitle}>
                         <Text style={styles.headerSurahName}>{currentSurah?.englishName || 'Loading...'}</Text>
                         <Text style={styles.ayahInfo}> {currentAyahNumber === 0 ? 'Bismillah' : `Ayah ${currentAyahNumber}`} OF {currentSurah?.numberOfAyahs || 114}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => setShowNavModal(true)} style={styles.iconBtn}><Book size={20} color="#57534e" /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowNavModal(true)} style={styles.iconBtn}><Book size={20} color={colors.sg.primary} /></TouchableOpacity>
                 </View>
 
                 <View style={styles.progressBarTrack}><View style={[styles.progressBar, { width: `${(Math.max(0, currentAyahNumber) / (currentSurah?.numberOfAyahs || 1)) * 100}%` }]} /></View>
@@ -377,8 +379,14 @@ export default function QuranReciterScreen() {
                             >
                                 {ayahData && ayahData.number === currentAyahNumber ? (
                                     <View style={styles.content}>
+                                        <Text style={styles.focusLabel}>Current Reading Focus</Text>
+                                        <Text style={styles.focusSurahName}>{currentSurah?.englishName}</Text>
+                                        
                                         {!hideArabic && (
                                             <View style={styles.ayahContainer}>
+                                                <View style={styles.ayahNumberBadge}>
+                                                    <Text style={styles.ayahNumberText}>{currentAyahNumber}</Text>
+                                                </View>
                                                 <View style={styles.wordsWrapper}>
                                                     {ayahData.words?.map((word: any, i: number) => (
                                                         <TouchableOpacity key={i} onPress={() => seekToWord(i)} style={[styles.wordBtn, currentWordIndex === i && styles.wordHighlight]} activeOpacity={0.7}>
@@ -395,13 +403,13 @@ export default function QuranReciterScreen() {
                                         ) : null}
                                         {!hideTranslation && (
                                             <View style={styles.translationBox}>
-                                                <Text style={styles.translation}>{ayahData.translation}</Text>
+                                                <Text style={styles.translation}>"{ayahData.translation}"</Text>
                                             </View>
                                         )}
                                     </View>
                                 ) : (
                                     <View style={styles.loading}>
-                                        <ActivityIndicator color="#059669" size="large" />
+                                        <ActivityIndicator color={colors.sg.primary} size="large" />
                                         <Text style={styles.loadingText}>Loading Ayah {currentAyahNumber}...</Text>
                                     </View>
                                 )}
@@ -410,29 +418,27 @@ export default function QuranReciterScreen() {
                     </FlingGestureHandler>
                 </FlingGestureHandler>
 
-                {/* Bookmark FAB - outside ScrollView so it stays fixed */}
                 <TouchableOpacity onPress={toggleBookmark} style={styles.bookmarkFab}>
-                    <Bookmark size={24} color={isBookmarked ? "#059669" : "#a8a29e"} fill={isBookmarked ? "#059669" : "none"} />
+                    <Bookmark size={24} color={isBookmarked ? colors.sg.secondary : colors.sg.onSurfaceVariant} fill={isBookmarked ? colors.sg.secondary : "none"} />
                 </TouchableOpacity>
 
-                {/* Memorizing FAB */}
                 <TouchableOpacity onPress={toggleMemorizing} style={styles.memorizeFab}>
-                    <Brain size={24} color={isMemorizing ? "#8b5cf6" : "#a8a29e"} />
+                    <Brain size={24} color={isMemorizing ? colors.sg.secondary : colors.sg.onSurfaceVariant} />
                 </TouchableOpacity>
 
                 <View style={styles.footer} pointerEvents="box-none">
                     <View style={styles.player}>
-                        <TouchableOpacity onPress={handlePrevious} style={styles.playerBtn}><SkipBack size={24} color="#57534e" /></TouchableOpacity>
+                        <TouchableOpacity onPress={handlePrevious} style={styles.playerBtn}><SkipBack size={24} color={colors.sg.onPrimary} /></TouchableOpacity>
                         <TouchableOpacity onPress={togglePlay} style={styles.playBtn} disabled={isAudioLoading}>
-                            {isAudioLoading ? <ActivityIndicator color="white" /> : isPlaying ? <Pause size={28} color="white" fill="white" /> : <Play size={28} color="white" fill="white" style={{ marginLeft: 4 }} />}
+                            {isAudioLoading ? <ActivityIndicator color={colors.sg.onSecondaryFixed} /> : isPlaying ? <Pause size={28} color={colors.sg.onSecondaryFixed} fill={colors.sg.onSecondaryFixed} /> : <Play size={28} color={colors.sg.onSecondaryFixed} fill={colors.sg.onSecondaryFixed} style={{ marginLeft: 4 }} />}
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={handleNext} style={styles.playerBtn}><SkipForward size={24} color="#57534e" /></TouchableOpacity>
+                        <TouchableOpacity onPress={handleNext} style={styles.playerBtn}><SkipForward size={24} color={colors.sg.onPrimary} /></TouchableOpacity>
                     </View>
                     <View style={styles.controls}>
-                        <TouchableOpacity onPress={() => setShowNavModal(true)} style={styles.controlBtn}><Book size={20} color="#059669" /></TouchableOpacity>
-                        <TouchableOpacity onPress={() => setHideArabic(!hideArabic)} style={styles.controlBtn}><Type size={20} color={!hideArabic ? "#059669" : "#a8a29e"} /></TouchableOpacity>
-                        <TouchableOpacity onPress={() => setHideTranslation(!hideTranslation)} style={styles.controlBtn}><Languages size={20} color={!hideTranslation ? "#059669" : "#a8a29e"} /></TouchableOpacity>
-                        <TouchableOpacity onPress={() => {}} style={styles.controlBtn}><Settings2 size={20} color="#a8a29e" /></TouchableOpacity>
+                        <TouchableOpacity onPress={() => setShowNavModal(true)} style={styles.controlBtn}><Book size={20} color={colors.sg.primary} /></TouchableOpacity>
+                        <TouchableOpacity onPress={() => setHideArabic(!hideArabic)} style={styles.controlBtn}><Type size={20} color={!hideArabic ? colors.sg.primary : colors.sg.outlineVariant} /></TouchableOpacity>
+                        <TouchableOpacity onPress={() => setHideTranslation(!hideTranslation)} style={styles.controlBtn}><Languages size={20} color={!hideTranslation ? colors.sg.primary : colors.sg.outlineVariant} /></TouchableOpacity>
+                        <TouchableOpacity onPress={() => {}} style={styles.controlBtn}><Settings2 size={20} color={colors.sg.outlineVariant} /></TouchableOpacity>
                     </View>
                 </View>
 
@@ -449,9 +455,9 @@ export default function QuranReciterScreen() {
 
                         {activeTab === 'surahs' && (
                             <View style={styles.searchContainer}>
-                                <Search size={20} color="#a8a29e" style={styles.searchIcon} />
-                                <TextInput placeholder="Search Surah..." value={searchQuery} onChangeText={setSearchQuery} style={styles.searchInput} placeholderTextColor="#a8a29e" />
-                                {searchQuery !== '' && <TouchableOpacity onPress={() => setSearchQuery('')}><X size={20} color="#a8a29e" /></TouchableOpacity>}
+                                <Search size={20} color={colors.sg.outlineVariant} style={styles.searchIcon} />
+                                <TextInput placeholder="Search Surah..." value={searchQuery} onChangeText={setSearchQuery} style={styles.searchInput} placeholderTextColor={colors.sg.outlineVariant} />
+                                {searchQuery !== '' && <TouchableOpacity onPress={() => setSearchQuery('')}><X size={20} color={colors.sg.outlineVariant} /></TouchableOpacity>}
                             </View>
                         )}
 
@@ -459,8 +465,8 @@ export default function QuranReciterScreen() {
                             {activeTab === 'surahs' ? (
                                 filteredSurahs.map(s => (
                                     <TouchableOpacity key={s.number} onPress={() => navigateToAyah(s.number, (s.number === 1 || s.number === 9) ? 1 : 0)} style={styles.card}>
-                                        <View style={styles.cardNumContainer}><Text style={styles.cardNum}>{s.number}</Text></View>
-                                        <View style={styles.cardContent}><Text style={styles.cardName}>{s.englishName}</Text><Text style={styles.cardType}>{s.revelationType}</Text></View>
+                                        <View style={styles.cardNumContainer}><Text style={styles.cardNum}>{pad(s.number)}</Text></View>
+                                        <View style={styles.cardContent}><Text style={styles.cardName}>{s.englishName}</Text><Text style={styles.cardType}>{s.numberOfAyahs} VERSES • {s.revelationType.toUpperCase()}</Text></View>
                                         <Text style={styles.cardArabic}>{s.name}</Text>
                                     </TouchableOpacity>
                                 ))
@@ -473,14 +479,14 @@ export default function QuranReciterScreen() {
                             ) : activeTab === 'memorizing' ? (
                                 memorizingList.length > 0 ? memorizingList.map((b, i) => (
                                     <TouchableOpacity key={i} onPress={() => navigateToAyah(b.surahNumber, b.ayahNumber)} style={styles.card}>
-                                        <Brain size={20} color="#8b5cf6" style={{ marginRight: 15 }} />
+                                        <Brain size={20} color={colors.sg.secondary} style={{ marginRight: 15 }} />
                                         <View style={styles.cardContent}><Text style={styles.cardName}>{b.surahName} - Verse {b.ayahNumber}</Text><Text style={styles.cardPreview} numberOfLines={1}>{b.previewText}</Text></View>
                                     </TouchableOpacity>
                                 )) : <View style={styles.empty}><Text style={styles.emptyText}>No ayahs marked for memorization</Text></View>
                             ) : (
                                 history.length > 0 ? history.map((h, i) => (
                                     <TouchableOpacity key={i} onPress={() => navigateToAyah(h.surahNumber, h.ayahNumber)} style={styles.card}>
-                                        <History size={20} color="#059669" style={{ marginRight: 15 }} />
+                                        <History size={20} color={colors.sg.primary} style={{ marginRight: 15 }} />
                                         <View style={styles.cardContent}><Text style={styles.cardName}>{h.surahName}</Text><Text style={styles.cardType}>Verse {h.ayahNumber}</Text></View>
                                         <Text style={styles.cardDate}>{new Date(h.timestamp).toLocaleDateString()}</Text>
                                     </TouchableOpacity>
@@ -489,7 +495,7 @@ export default function QuranReciterScreen() {
                         </GHScrollView>
 
                         <View style={styles.modalFooter as any}>
-                            <TouchableOpacity onPress={() => setShowNavModal(false)} style={styles.closeBtn}><Text style={styles.closeBtnText}>CLOSE</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => setShowNavModal(false)} style={styles.closeBtn}><Text style={styles.closeBtnText}>CLOSE SANCTUARY</Text></TouchableOpacity>
                         </View>
                     </SafeAreaView>
                 </Modal>
@@ -500,58 +506,62 @@ export default function QuranReciterScreen() {
 
 const styles = StyleSheet.create({
     root: { flex: 1 },
-    safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15 },
-    iconBtn: { padding: 10, borderRadius: 14, backgroundColor: '#fcfaf9' },
+    safeArea: { flex: 1, backgroundColor: colors.sg.background },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15, backgroundColor: colors.sg.background },
+    iconBtn: { padding: 10, borderRadius: 14, backgroundColor: colors.sg.surfaceContainerHighest },
     headerTitle: { alignItems: 'center', flex: 1 },
-    headerSurahName: { fontWeight: '800', fontSize: 19, color: '#1c1917' },
-    ayahInfo: { fontSize: 11, color: '#a8a29e', textTransform: 'uppercase', letterSpacing: 1.2, marginTop: 2, fontWeight: '600' },
-    progressBarTrack: { height: 2, backgroundColor: '#f5f5f4' },
-    progressBar: { height: 2, backgroundColor: '#059669' },
-    container: { flex: 1 },
-    scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 20, paddingBottom: 220 },
+    headerSurahName: { ...typography.sg.headlineLgMobile, color: colors.sg.primary },
+    ayahInfo: { ...typography.sg.labelMd, color: colors.sg.secondary, marginTop: 2 },
+    progressBarTrack: { height: 2, backgroundColor: colors.sg.surfaceContainerHighest },
+    progressBar: { height: 2, backgroundColor: colors.sg.secondaryContainer },
+    container: { flex: 1, backgroundColor: colors.sg.surfaceContainerLowest, marginHorizontal: 16, marginTop: 16, borderRadius: 24, borderWidth: 1, borderColor: colors.sg.surfaceContainerHigh },
+    scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 32, paddingBottom: 220 },
     content: { alignItems: 'center', width: '100%', flexShrink: 1 },
+    focusLabel: { ...typography.sg.labelMd, color: colors.sg.secondary, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 },
+    focusSurahName: { ...typography.sg.displayLg, color: colors.sg.primary, fontStyle: 'italic', marginBottom: 24 },
     loading: { flexShrink: 1, alignItems: 'center', justifyContent: 'center', marginTop: 100 },
-    loadingText: { color: '#a8a29e', fontSize: 14, marginTop: 10, fontWeight: '500' },
-    ayahContainer: { width: '100%', marginBottom: 35 },
+    loadingText: { ...typography.sg.labelMd, color: colors.sg.onSurfaceVariant, marginTop: 10 },
+    ayahContainer: { width: '100%', marginBottom: 35, alignItems: 'center' },
+    ayahNumberBadge: { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: colors.sg.secondaryContainer, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
+    ayahNumberText: { ...typography.sg.labelMd, color: colors.sg.secondary, fontSize: 12 },
     wordsWrapper: { flexDirection: 'row-reverse', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' },
     wordBtn: { paddingHorizontal: 4, paddingVertical: 2, borderRadius: 10, margin: 2 },
-    wordHighlight: { backgroundColor: '#f0fdf4' },
+    wordHighlight: { backgroundColor: colors.sg.surfaceContainerHighest },
     transliterationBox: { marginBottom: 25, width: '100%', paddingHorizontal: 10 },
-    translationBox: { width: '100%', borderTopWidth: 1, borderTopColor: '#f1f1f1', paddingTop: 25, marginTop: 5 },
-    translation: { color: '#3f3f46', fontSize: 18, lineHeight: 28, textAlign: 'center', fontFamily: 'RobotoSerif' },
-    bookmarkFab: { position: 'absolute', top: 90, left: 16, zIndex: 10, padding: 10, borderRadius: 25, backgroundColor: 'white', elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
-    memorizeFab: { position: 'absolute', top: 145, left: 16, zIndex: 10, padding: 10, borderRadius: 25, backgroundColor: 'white', elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
+    translationBox: { width: '100%', borderTopWidth: 1, borderTopColor: colors.sg.surfaceContainerHigh, paddingTop: 25, marginTop: 5 },
+    translation: { ...typography.sg.spiritualText, color: colors.sg.onSurfaceVariant, textAlign: 'center', fontStyle: 'italic' },
+    bookmarkFab: { position: 'absolute', top: 90, left: 16, zIndex: 10, padding: 10, borderRadius: 25, backgroundColor: colors.sg.surfaceContainerLowest, elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
+    memorizeFab: { position: 'absolute', top: 145, left: 16, zIndex: 10, padding: 10, borderRadius: 25, backgroundColor: colors.sg.surfaceContainerLowest, elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
     
     footer: { position: 'absolute', bottom: 30, width: '100%', alignItems: 'center' },
-    player: { width: '85%', height: 75, backgroundColor: '#FFF', borderRadius: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', elevation: 15, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, borderWidth: 1, borderColor: '#f0f0f0' },
-    playBtn: { width: 58, height: 58, backgroundColor: '#059669', borderRadius: 29, alignItems: 'center', justifyContent: 'center' },
+    player: { width: '85%', height: 75, backgroundColor: colors.sg.primary, borderRadius: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', elevation: 15, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    playBtn: { width: 58, height: 58, backgroundColor: colors.sg.secondaryContainer, borderRadius: 29, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 10, elevation: 5 },
     playerBtn: { padding: 15 },
-    controls: { flexDirection: 'row', gap: 15, marginTop: 20, backgroundColor: '#FFFFFF', padding: 10, borderRadius: 30, elevation: 5, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 10, borderWidth: 1, borderColor: '#f5f5f4' },
+    controls: { flexDirection: 'row', gap: 15, marginTop: 20, backgroundColor: colors.sg.surfaceContainerLowest, padding: 10, borderRadius: 30, elevation: 5, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 10, borderWidth: 1, borderColor: colors.sg.surfaceContainerHigh },
     controlBtn: { padding: 10, borderRadius: 20 },
 
-    modalRoot: { flex: 1, backgroundColor: 'white' },
+    modalRoot: { flex: 1, backgroundColor: colors.sg.background },
     tabBar: { flexDirection: 'row', padding: 20, justifyContent: 'space-between', gap: 10 },
-    tab: { flex: 1, paddingVertical: 10, borderRadius: 20, backgroundColor: '#f1f5f9', alignItems: 'center' },
-    tabActive: { backgroundColor: '#059669' },
-    tabText: { fontSize: 10, fontWeight: '700', color: '#64748b' },
-    tabTextActive: { color: 'white' },
-    searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8fafc', marginHorizontal: 20, marginBottom: 15, paddingHorizontal: 15, borderRadius: 15 },
+    tab: { flex: 1, paddingVertical: 10, borderRadius: 20, backgroundColor: colors.sg.surfaceContainer, alignItems: 'center' },
+    tabActive: { backgroundColor: colors.sg.primary },
+    tabText: { ...typography.sg.labelMd, fontSize: 10, color: colors.sg.onSurfaceVariant },
+    tabTextActive: { color: colors.sg.onPrimary },
+    searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.sg.surfaceContainerLowest, marginHorizontal: 20, marginBottom: 15, paddingHorizontal: 15, borderRadius: 15, borderWidth: 1, borderColor: colors.sg.outlineVariant },
     searchIcon: { marginRight: 10 },
-    searchInput: { flex: 1, height: 50, fontSize: 15, color: '#1c1917' },
+    searchInput: { flex: 1, height: 50, ...typography.sg.bodyMd, color: colors.sg.onSurface },
     list: { flex: 1, paddingHorizontal: 20 },
-    card: { flexDirection: 'row', padding: 18, marginBottom: 12, borderRadius: 20, backgroundColor: 'white', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, borderWidth: 1, borderColor: '#f8fafc' },
-    cardNumContainer: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center', marginRight: 15 },
-    cardNum: { color: '#64748b', fontWeight: 'bold' },
+    card: { flexDirection: 'row', padding: 18, marginBottom: 12, borderRadius: 16, backgroundColor: colors.sg.surfaceContainerLowest, alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5, shadowOffset: { width: 0, height: 2 }, borderWidth: 1, borderColor: colors.sg.surfaceContainerHigh },
+    cardNumContainer: { width: 48, height: 48, borderRadius: 12, backgroundColor: colors.sg.surfaceContainer, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+    cardNum: { ...typography.sg.spiritualText, color: colors.sg.primary },
     cardContent: { flex: 1 },
-    cardName: { fontWeight: '700', fontSize: 16, color: '#1c1917' },
-    cardType: { fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginTop: 2 },
-    cardArabic: { fontSize: 20, color: '#1c1917', fontFamily: 'IndopakNastaleeq' },
-    cardPreview: { fontSize: 13, color: '#94a3b8', marginTop: 4 },
-    cardDate: { fontSize: 11, color: '#94a3b8' },
+    cardName: { ...typography.sg.labelMd, fontSize: 16, color: colors.sg.onSurface },
+    cardType: { ...typography.sg.labelMd, fontSize: 10, color: colors.sg.onSurfaceVariant, marginTop: 2 },
+    cardArabic: { fontSize: 24, color: colors.sg.primary, fontFamily: 'KFGQPCHafs' },
+    cardPreview: { ...typography.sg.bodyMd, fontSize: 13, color: colors.sg.onSurfaceVariant, marginTop: 4 },
+    cardDate: { ...typography.sg.labelMd, fontSize: 11, color: colors.sg.onSurfaceVariant },
     empty: { alignItems: 'center', marginTop: 50 },
-    emptyText: { color: '#94a3b8' },
-    modalFooter: { position: 'absolute', bottom: 0, width: '100%', padding: 20, backgroundColor: 'rgba(255,255,255,0.9)' },
-    closeBtn: { padding: 16, backgroundColor: '#f1f5f9', borderRadius: 15, alignItems: 'center' },
-    closeBtnText: { fontWeight: 'bold', color: '#64748b', fontSize: 14 }
+    emptyText: { ...typography.sg.bodyMd, color: colors.sg.onSurfaceVariant },
+    modalFooter: { position: 'absolute', bottom: 0, width: '100%', padding: 20, backgroundColor: colors.sg.background + 'E6' },
+    closeBtn: { padding: 16, backgroundColor: colors.sg.primary, borderRadius: 15, alignItems: 'center' },
+    closeBtnText: { ...typography.sg.labelMd, color: colors.sg.onPrimary }
 });

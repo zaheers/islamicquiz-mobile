@@ -1,26 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Clock, ChevronRight, X, Trash2 } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { useFocusEffect } from '@react-navigation/native';
-import {
-  NoorHistoryItem,
-  loadNoorHistory,
-  deleteNoorHistoryItem,
-} from '../services/noorHistoryService';
+import { NoorHistoryItem, loadNoorHistory, deleteNoorHistoryItem } from '../services/noorHistoryService';
+import { ScreenContainer } from '@/components/ui/ScreenContainer';
+import { SpiritualCard } from '@/components/ui/SpiritualCard';
 
 export const HistoryScreen = ({ navigation }: any) => {
   const [history, setHistory] = useState<NoorHistoryItem[]>([]);
@@ -64,20 +51,22 @@ export const HistoryScreen = ({ navigation }: any) => {
   };
 
   const renderItem = ({ item }: { item: NoorHistoryItem }) => (
-    <TouchableOpacity style={styles.card} onPress={() => setSelected(item)} activeOpacity={0.75}>
-      <View style={styles.cardIcon}>
-        <Clock size={18} color={colors.primary} />
-      </View>
-      <View style={styles.cardBody}>
-        <Text style={styles.cardQuestion} numberOfLines={2}>{item.question}</Text>
-        <Text style={styles.cardDate}>{formatDate(item.created_at)}</Text>
-      </View>
-      <ChevronRight size={18} color={colors.textSecondary} />
+    <TouchableOpacity onPress={() => setSelected(item)} activeOpacity={0.75}>
+      <SpiritualCard style={styles.card}>
+        <View style={styles.cardIcon}>
+          <Clock size={18} color={colors.sg.primary} />
+        </View>
+        <View style={styles.cardBody}>
+          <Text style={styles.cardQuestion} numberOfLines={2}>{item.question}</Text>
+          <Text style={styles.cardDate}>{formatDate(item.created_at)}</Text>
+        </View>
+        <ChevronRight size={18} color={colors.sg.outline} />
+      </SpiritualCard>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>History</Text>
@@ -86,7 +75,7 @@ export const HistoryScreen = ({ navigation }: any) => {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.primary} size="large" />
+          <ActivityIndicator color={colors.sg.primary} size="large" />
         </View>
       ) : (
         <FlatList
@@ -96,7 +85,7 @@ export const HistoryScreen = ({ navigation }: any) => {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Clock size={48} color={colors.border} />
+              <Clock size={48} color={colors.sg.outlineVariant} />
               <Text style={styles.emptyText}>No questions asked yet.</Text>
               <Text style={styles.emptyHint}>Ask Noor AI something to get started.</Text>
             </View>
@@ -111,18 +100,18 @@ export const HistoryScreen = ({ navigation }: any) => {
         presentationStyle="pageSheet"
         onRequestClose={() => setSelected(null)}
       >
-        <SafeAreaView style={styles.modal}>
+        <ScreenContainer style={styles.modal}>
           {/* Modal Header */}
           <View style={styles.modalHeader}>
             <Pressable onPress={() => setSelected(null)} style={styles.modalClose}>
-              <X size={22} color={colors.text} />
+              <X size={22} color={colors.sg.onSurface} />
             </Pressable>
             <Text style={styles.modalTitle}>Noor AI Response</Text>
             <Pressable
               onPress={() => selected && handleDelete(selected.id)}
               style={styles.modalDelete}
             >
-              <Trash2 size={20} color={colors.error} />
+              <Trash2 size={20} color={colors.sg.error} />
             </Pressable>
           </View>
 
@@ -134,104 +123,93 @@ export const HistoryScreen = ({ navigation }: any) => {
             </View>
 
             {/* Answer */}
-            <View style={styles.answerBubble}>
+            <SpiritualCard style={styles.answerBubble}>
               <Text style={styles.answerLabel}>NOOR AI</Text>
               <Text style={styles.answerText}>{selected?.answer}</Text>
-            </View>
+            </SpiritualCard>
 
             <Text style={styles.timestampText}>{selected ? formatDate(selected.created_at) : ''}</Text>
           </ScrollView>
-        </SafeAreaView>
+        </ScreenContainer>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F3F4F6' },
+  container: { flex: 1, backgroundColor: colors.sg.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   header: {
     padding: spacing.l,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.sg.surfaceContainerLowest,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
-  headerTitle: { ...typography.h1, color: colors.text },
-  headerSub: { ...typography.body, color: colors.textSecondary, marginTop: 2 },
+  headerTitle: { ...typography.sg.headlineLgMobile, fontSize: 28, color: colors.sg.primary },
+  headerSub: { ...typography.sg.labelMd, color: colors.sg.outline, marginTop: 2 },
 
   listContent: { padding: spacing.m, gap: 10 },
 
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 14,
     padding: spacing.m,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
   },
   cardIcon: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#F0FDF4',
+    backgroundColor: colors.sg.surfaceContainerHighest,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.m,
   },
   cardBody: { flex: 1 },
-  cardQuestion: { ...typography.body, color: colors.text, fontWeight: '600' },
-  cardDate: { ...typography.label, color: colors.textSecondary, marginTop: 3 },
+  cardQuestion: { ...typography.sg.bodyMd, color: colors.sg.onSurface, fontWeight: '600' },
+  cardDate: { ...typography.sg.labelMd, color: colors.sg.outline, marginTop: 3 },
 
   emptyContainer: { marginTop: 100, alignItems: 'center', gap: 10 },
-  emptyText: { ...typography.h3, color: colors.textSecondary },
-  emptyHint: { ...typography.body, color: colors.textSecondary },
+  emptyText: { ...typography.sg.bodyLg, fontWeight: '600', color: colors.sg.onSurfaceVariant },
+  emptyHint: { ...typography.sg.bodyMd, color: colors.sg.outline },
 
   // Modal
-  modal: { flex: 1, backgroundColor: '#F3F4F6' },
+  modal: { flex: 1, backgroundColor: colors.sg.background },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.sg.surfaceContainerLowest,
     paddingHorizontal: spacing.m,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.sg.surfaceContainerHigh,
   },
   modalClose: { padding: 8 },
-  modalTitle: { flex: 1, textAlign: 'center', ...typography.h3, color: colors.text },
+  modalTitle: { flex: 1, textAlign: 'center', ...typography.sg.headlineLgMobile, fontSize: 22, color: colors.sg.primary },
   modalDelete: { padding: 8 },
 
   modalContent: { padding: spacing.l, gap: 16 },
 
   questionBubble: {
-    backgroundColor: colors.primaryDark,
+    backgroundColor: colors.sg.primary,
     borderRadius: 16,
     borderBottomRightRadius: 4,
     padding: spacing.m,
     alignSelf: 'flex-end',
     maxWidth: '90%',
   },
-  questionLabel: { fontSize: 10, fontWeight: '700', color: colors.primaryLight, letterSpacing: 1, marginBottom: 6 },
-  questionText: { ...typography.body, color: '#fff', lineHeight: 22 },
+  questionLabel: { ...typography.sg.labelMd, color: colors.sg.primaryFixed, letterSpacing: 1, marginBottom: 6 },
+  questionText: { ...typography.sg.bodyMd, color: colors.sg.onPrimary, lineHeight: 22 },
 
   answerBubble: {
-    backgroundColor: colors.surface,
     borderRadius: 16,
     borderBottomLeftRadius: 4,
     padding: spacing.m,
     alignSelf: 'flex-start',
     maxWidth: '95%',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
   },
-  answerLabel: { fontSize: 10, fontWeight: '700', color: colors.primary, letterSpacing: 1, marginBottom: 6 },
-  answerText: { ...typography.body, color: colors.textBody, lineHeight: 26 },
+  answerLabel: { ...typography.sg.labelMd, color: colors.sg.secondary, letterSpacing: 1, marginBottom: 6 },
+  answerText: { ...typography.sg.bodyMd, color: colors.sg.onSurface, lineHeight: 26 },
 
-  timestampText: { ...typography.label, color: colors.textSecondary, textAlign: 'center', marginTop: 8 },
+  timestampText: { ...typography.sg.labelMd, color: colors.sg.outline, textAlign: 'center', marginTop: 8 },
 });
