@@ -7,6 +7,7 @@ import { typography } from '@/theme/typography';
 import { askNoor } from '@/services/noorApi';
 import { Sparkles, Sun, Droplets, Cloud, Send, Brain, ArrowLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { ENABLE_ISLAMIC_MINDFULNESS_V2, processMindfulnessInput } from '@/features/islamicMindfulnessV2';
 
 // MOODS will be defined inside the component to access dynamic colors
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
     text?: string;
     result?: { verses: any[], reflection: string };
     isTyping?: boolean;
+    quickReplies?: string[];
 }
 
 export default function AskMyDayScreen() {
@@ -58,20 +60,27 @@ export default function AskMyDayScreen() {
         setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
 
         try {
-            const prompt = mood 
-                ? `I am feeling ${mood}. Provide 1-2 relevant Quranic ayat and exactly one short reflective wellness advice for me.`
-                : `Here is what's on my mind: ${text}. Provide 1-2 relevant Quranic ayat and exactly one short reflective wellness advice.`;
+            // FORCE V2 Execution
+            const v2Data = await processMindfulnessInput(text, mood);
                 
-            const data = await askNoor({
-                mode: 'ask_my_day',
-                topic: mood || 'reflection',
-                systemPrompt: prompt
-            });
-            
-            const verses = data.verses || data.answer?.verses || [];
-            const reflection = data.reflection || data.answer?.reflection || data.answer || "Reflect deeply on these verses and how they apply to your life.";
-            
-            setMessages(prev => prev.map(m => m.id === typingId ? { id: typingId, type: 'ai', result: { verses, reflection } } : m));
+                // The acknowledgment now contains the full beautifully written paragraph (fullResponseText)
+                let reflectionText = v2Data.acknowledgment;
+
+                const mappedVerses = v2Data.quranReference && (v2Data.quranReference.surahNumber > 0 || v2Data.quranReference.arabicText) ? [{
+                    arabic_text: v2Data.quranReference.arabicText,
+                    translation: v2Data.quranReference.translation,
+                    surah_name: v2Data.quranReference.surahName,
+                    surah_number: v2Data.quranReference.surahNumber,
+                    ayah_number: v2Data.quranReference.ayahNumber,
+                }] : [];
+
+                setMessages(prev => prev.map(m => m.id === typingId ? { 
+                    id: typingId, 
+                    type: 'ai', 
+                    result: { verses: mappedVerses, reflection: reflectionText },
+                    quickReplies: v2Data.quickReplies
+                } : m));
+            // V1 flow removed for testing
         } catch (err) {
             setMessages(prev => prev.map(m => m.id === typingId ? { id: typingId, type: 'ai', text: "I'm sorry, I couldn't process that right now. Please try again." } : m));
         }
@@ -159,7 +168,11 @@ export default function AskMyDayScreen() {
                                                     <View key={i} style={styles.verseBox}>
                                                         {v.arabic_text && <Text style={styles.verseArabic}>{v.arabic_text}</Text>}
                                                         <Text style={styles.verseTranslation}>"{v.translation || v.text}"</Text>
-                                                        <Text style={styles.verseRef}>- Surah {v.surah_name_en || v.surah_name} ({v.surah_number}:{v.ayah_number})</Text>
+                                                        <Text style={styles.verseRef}>
+                                    - {v.surah_number > 0 
+                                        ? `Surah ${v.surah_name_en && v.surah_name_en !== 'Unknown' ? v.surah_name_en : v.surah_name && v.surah_name !== 'Unknown' ? v.surah_name : v.surah_number} (${v.surah_number}:${v.ayah_number || v.ayah || 0})`
+                                        : (v.surah_name_en && v.surah_name_en !== 'Unknown' ? v.surah_name_en : 'Prophetic Dua')}
+                                </Text>
                                                     </View>
                                                 ))}
                                                 <View style={styles.adviceBox}>
@@ -168,6 +181,15 @@ export default function AskMyDayScreen() {
                                                 </View>
                                             </View>
                                         ) : null}
+                                        {msg.quickReplies && msg.quickReplies.length > 0 && (
+                                            <View style={styles.quickRepliesContainer}>
+                                                {msg.quickReplies.map((reply, i) => (
+                                                    <TouchableOpacity key={i} style={styles.quickReplyBtn} onPress={() => handleSend(reply)}>
+                                                        <Text style={styles.quickReplyText}>{reply}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
+                                            </View>
+                                        )}
                                     </View>
                                 )}
                             </View>
@@ -235,5 +257,8 @@ const createStyles = (colors: any) => StyleSheet.create({
     adviceText: { ...typography.sg.bodyMd, fontSize: 14, color: colors.sg.onSurfaceVariant, fontStyle: 'italic' },
     inputArea: { paddingHorizontal: 24, paddingTop: 16, backgroundColor: colors.sg.background },
     textInput: { backgroundColor: colors.sg.surfaceContainerHigh, borderRadius: 16, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14, paddingRight: 60, minHeight: 50, maxHeight: 100, ...typography.sg.bodyMd, color: colors.sg.onSurface },
-    sendBtnInner: { position: 'absolute', right: 12, bottom: 5, width: 40, height: 40, borderRadius: 12, backgroundColor: colors.sg.primary, alignItems: 'center', justifyContent: 'center' }
+    sendBtnInner: { position: 'absolute', right: 12, bottom: 5, width: 40, height: 40, borderRadius: 12, backgroundColor: colors.sg.primary, alignItems: 'center', justifyContent: 'center' },
+    quickRepliesContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+    quickReplyBtn: { backgroundColor: colors.sg.primaryContainer, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: colors.sg.primary },
+    quickReplyText: { ...typography.sg.labelMd, color: colors.sg.onPrimaryContainer, fontSize: 12 }
 });

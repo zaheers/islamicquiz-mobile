@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, Platform, Alert } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { askNoor } from '@/services/noorApi';
+import { ENABLE_ISLAMIC_MINDFULNESS_V2, processMindfulnessInput } from '@/features/islamicMindfulnessV2';
 import { Send, ArrowLeft, MoreVertical, Sparkles, PlusCircle, Sun } from 'lucide-react-native';
 
 interface Message {
@@ -14,6 +16,7 @@ interface Message {
     text?: string;
     result?: { verses: any[], reflection: string };
     isTyping?: boolean;
+    quickReplies?: string[];
 }
 
 interface AIBottomSheetProps {
@@ -45,17 +48,30 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
         ]);
 
         try {
-            const systemPrompt = `I am feeling ${prompt}. Act as a therapeutic Islamic companion using the 'Sakina Method'. Structure your exact response in 3 short stages: 1. Validate Context (1 sentence), 2. Reveal Revelation (1 short Quranic ayah), 3. Prescribe Action (1 actionable sentence). Keep token length strictly under 80 words to prevent UI clipping.`;
-            const data = await askNoor({
-                mode: 'ask_my_day',
-                topic: topicLabel,
-                systemPrompt: systemPrompt
-            });
-            
-            const verses = data.verses || data.answer?.verses || [];
-            const reflection = data.reflection || data.answer?.reflection || data.answer || "Reflect deeply on these verses and how they apply to your life.";
-            
-            setMessages(prev => prev.map(m => m.isTyping ? { id: m.id, type: 'ai', result: { verses, reflection } } : m));
+            if (ENABLE_ISLAMIC_MINDFULNESS_V2) {
+                const v2Data = await processMindfulnessInput(prompt, topicLabel);
+                const reflectionText = v2Data.acknowledgment || '';
+                const mappedVerses = v2Data.quranReference && (v2Data.quranReference.surahNumber > 0 || v2Data.quranReference.arabicText) ? [{
+                    arabic_text: v2Data.quranReference.arabicText,
+                    translation: v2Data.quranReference.translation,
+                    surah_name_en: v2Data.quranReference.surahName,
+                    surah_number: v2Data.quranReference.surahNumber,
+                    ayah_number: v2Data.quranReference.ayahNumber,
+                }] : [];
+                setMessages(prev => prev.map(m => m.isTyping ? { id: m.id, type: 'ai', result: { verses: mappedVerses, reflection: reflectionText }, quickReplies: v2Data.quickReplies } : m));
+            } else {
+                const systemPrompt = `I am feeling ${prompt}. Act as a therapeutic Islamic companion using the 'Sakina Method'. Structure your exact response in 3 short stages: 1. Validate Context (1 sentence), 2. Reveal Revelation (1 short Quranic ayah), 3. Prescribe Action (1 actionable sentence). Keep token length strictly under 80 words to prevent UI clipping.`;
+                const data = await askNoor({
+                    mode: 'ask_my_day',
+                    topic: topicLabel,
+                    systemPrompt: systemPrompt
+                });
+                
+                const verses = data.verses || data.answer?.verses || [];
+                const reflection = data.reflection || data.answer?.reflection || data.answer || "Reflect deeply on these verses and how they apply to your life.";
+                
+                setMessages(prev => prev.map(m => m.isTyping ? { id: m.id, type: 'ai', result: { verses, reflection } } : m));
+            }
         } catch (err) {
             setMessages(prev => prev.map(m => m.isTyping ? { id: m.id, type: 'ai', text: "I'm sorry, I couldn't process that right now. Please try again." } : m));
         }
@@ -74,17 +90,30 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
         Keyboard.dismiss();
 
         try {
-            const prompt = `Here is what's on my mind: ${text}. Act as a therapeutic Islamic companion using the 'Sakina Method'. Structure your exact response in 3 short stages: 1. Validate Context (1 sentence), 2. Reveal Revelation (1 short Quranic ayah), 3. Prescribe Action (1 actionable sentence). Keep token length strictly under 80 words to prevent UI clipping.`;
-            const data = await askNoor({
-                mode: 'ask_my_day',
-                topic: topic || 'reflection',
-                systemPrompt: prompt
-            });
-            
-            const verses = data.verses || data.answer?.verses || [];
-            const reflection = data.reflection || data.answer?.reflection || data.answer || "Reflect deeply on these verses and how they apply to your life.";
-            
-            setMessages(prev => prev.map(m => m.id === typingId ? { id: typingId, type: 'ai', result: { verses, reflection } } : m));
+            if (ENABLE_ISLAMIC_MINDFULNESS_V2) {
+                const v2Data = await processMindfulnessInput(text, topic || 'reflection');
+                const reflectionText = v2Data.acknowledgment || '';
+                const mappedVerses = v2Data.quranReference && (v2Data.quranReference.surahNumber > 0 || v2Data.quranReference.arabicText) ? [{
+                    arabic_text: v2Data.quranReference.arabicText,
+                    translation: v2Data.quranReference.translation,
+                    surah_name_en: v2Data.quranReference.surahName,
+                    surah_number: v2Data.quranReference.surahNumber,
+                    ayah_number: v2Data.quranReference.ayahNumber,
+                }] : [];
+                setMessages(prev => prev.map(m => m.id === typingId ? { id: typingId, type: 'ai', result: { verses: mappedVerses, reflection: reflectionText }, quickReplies: v2Data.quickReplies } : m));
+            } else {
+                const prompt = `Here is what's on my mind: ${text}. Act as a therapeutic Islamic companion using the 'Sakina Method'. Structure your exact response in 3 short stages: 1. Validate Context (1 sentence), 2. Reveal Revelation (1 short Quranic ayah), 3. Prescribe Action (1 actionable sentence). Keep token length strictly under 80 words to prevent UI clipping.`;
+                const data = await askNoor({
+                    mode: 'ask_my_day',
+                    topic: topic || 'reflection',
+                    systemPrompt: prompt
+                });
+                
+                const verses = data.verses || data.answer?.verses || [];
+                const reflection = data.reflection || data.answer?.reflection || data.answer || "Reflect deeply on these verses and how they apply to your life.";
+                
+                setMessages(prev => prev.map(m => m.id === typingId ? { id: typingId, type: 'ai', result: { verses, reflection } } : m));
+            }
         } catch (err) {
             setMessages(prev => prev.map(m => m.id === typingId ? { id: typingId, type: 'ai', text: "I'm sorry, I couldn't process that right now. Please try again." } : m));
         }
@@ -103,7 +132,7 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
         []
     );
 
-    const bottomPadding = Math.max(insets.bottom + (Platform.OS === 'android' ? 48 : 0), 40);
+    const bottomPadding = Math.max(insets.bottom + (Platform.OS === 'android' ? 68 : 24), 48);
 
     const baseChips = [
         "Show me a Dua for peace",
@@ -112,7 +141,16 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
     ];
     
     const hasAiResponse = messages.some(m => m.type === 'ai' && m.result);
-    const suggestionChips = hasAiResponse ? ["✨ Wrap up my reflection", ...baseChips] : baseChips;
+    const lastAiMsg = [...messages].reverse().find(m => m.type === 'ai' && m.result);
+    
+    let suggestionChips = baseChips;
+    if (hasAiResponse) {
+        if (lastAiMsg?.quickReplies && lastAiMsg.quickReplies.length > 0) {
+            suggestionChips = ["🔄 Start Fresh", "✨ Wrap up my reflection", ...lastAiMsg.quickReplies];
+        } else {
+            suggestionChips = ["🔄 Start Fresh", "✨ Wrap up my reflection", ...baseChips];
+        }
+    }
 
     const handleWrapUp = () => {
         bottomSheetRef.current?.close();
@@ -133,6 +171,27 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
     };
 
 
+
+    const handleReset = () => {
+        Alert.alert(
+            "Start Fresh",
+            "Would you like to clear this conversation and start over?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { 
+                    text: "Start Fresh", 
+                    style: "destructive",
+                    onPress: () => {
+                        if (initialPrompt && topic) {
+                            handleInitialPrompt(initialPrompt, topic);
+                        } else {
+                            setMessages([]);
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <BottomSheet
@@ -158,7 +217,7 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
                             <Text style={styles.listeningText}>Al-Noor AI is listening</Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.headerBtn}>
+                    <TouchableOpacity style={styles.headerBtn} onPress={handleReset}>
                         <MoreVertical size={24} color={colors.sg.onSurfaceVariant} />
                     </TouchableOpacity>
                 </BottomSheetView>
@@ -202,13 +261,16 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
                                                     <View key={i} style={styles.verseBox}>
                                                         {v.arabic_text && <Text style={styles.verseArabic}>{v.arabic_text}</Text>}
                                                         <Text style={styles.verseTranslation}>"{v.translation || v.text}"</Text>
-                                                        <Text style={styles.verseRef}>- Surah {v.surah_name_en || v.surah_name || v.surah} ({v.surah_number || v.surah}:{v.ayah_number || v.ayah})</Text>
+                                                        <Text style={styles.verseRef}>
+                                                            - {v.surah_number > 0 
+                                                                ? `Surah ${v.surah_name_en && v.surah_name_en !== 'Unknown' ? v.surah_name_en : v.surah_name && v.surah_name !== 'Unknown' ? v.surah_name : v.surah_number} (${v.surah_number}:${v.ayah_number || v.ayah || 0})`
+                                                                : (v.surah_name_en && v.surah_name_en !== 'Unknown' ? v.surah_name_en : 'Prophetic Dua')}
+                                                        </Text>
                                                     </View>
                                                 ))}
                                                 
                                                 <View style={styles.adviceSection}>
                                                     <Text style={styles.adviceSectionTitle}>Spiritual Intentions for You:</Text>
-                                                    
                                                     <View style={styles.bentoCard}>
                                                         <Sun size={20} color={colors.sg.secondary} style={{ marginRight: 12 }} />
                                                         <View style={{ flex: 1 }}>
@@ -217,10 +279,6 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
                                                         </View>
                                                     </View>
                                                 </View>
-                                                
-                                                <Text style={[styles.aiText, { marginTop: 16 }]}>
-                                                    Would you like a specific Dua for tranquility, or perhaps we can look at a short Surah to recite?
-                                                </Text>
                                             </View>
                                         ) : null}
                                     </View>
@@ -239,16 +297,26 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
                     {suggestionChips.map((chip, i) => (
                         <TouchableOpacity 
                             key={i} 
-                            style={[styles.suggestionChip, chip.startsWith('✨') && { backgroundColor: colors.sg.primaryContainer }]} 
+                            style={[
+                                styles.suggestionChip, 
+                                chip.startsWith('✨') && { backgroundColor: colors.sg.primaryContainer },
+                                chip.startsWith('🔄') && { backgroundColor: colors.sg.surfaceContainerHighest, borderColor: colors.sg.outline, borderWidth: 1 }
+                            ]} 
                             onPress={() => {
-                                if (chip.startsWith('✨')) {
+                                if (chip.startsWith('🔄')) {
+                                    handleReset();
+                                } else if (chip.startsWith('✨')) {
                                     handleWrapUp();
                                 } else {
                                     setInputText(chip);
                                 }
                             }}
                         >
-                            <Text style={[styles.suggestionText, chip.startsWith('✨') && { color: colors.sg.onPrimaryContainer, fontWeight: 'bold' }]}>{chip}</Text>
+                            <Text style={[
+                                styles.suggestionText, 
+                                chip.startsWith('✨') && { color: colors.sg.onPrimaryContainer, fontWeight: 'bold' },
+                                chip.startsWith('🔄') && { color: colors.sg.onSurfaceVariant }
+                            ]}>{chip}</Text>
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
