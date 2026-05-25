@@ -1,4 +1,4 @@
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +13,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title, showBack = false, rightAction }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const router = useRouter();
 
     return (
@@ -34,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ title, showBack = false, rightAc
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         height: 56,
         flexDirection: 'row',

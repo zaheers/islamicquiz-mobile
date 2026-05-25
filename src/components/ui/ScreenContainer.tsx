@@ -1,4 +1,4 @@
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { StatusBar, StyleSheet, View, ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,9 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
     safe = true,
     ...props
 }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const Container = safe ? SafeAreaView : View;
 
     return (
@@ -23,7 +26,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,

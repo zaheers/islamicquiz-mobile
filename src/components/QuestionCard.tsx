@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SpiritualCard } from './ui/SpiritualCard';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 
@@ -10,6 +10,9 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   return (
     <SpiritualCard style={styles.container}>
       <Text style={styles.label}>Your Question</Text>
@@ -20,7 +23,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     marginBottom: spacing.m,
     padding: spacing.l,

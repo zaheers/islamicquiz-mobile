@@ -1,4 +1,4 @@
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { borderRadius } from '@/theme/spacing';
 import React from 'react';
 import { DimensionValue, StyleSheet, View } from 'react-native';
@@ -9,6 +9,9 @@ interface ProgressBarProps {
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, height = 8 }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const widthVal = `${Math.min(Math.max(progress, 0), 1) * 100}%` as DimensionValue;
 
     return (
@@ -18,7 +21,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, height = 8 }
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         width: '100%',
         backgroundColor: colors.border,

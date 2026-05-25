@@ -12,6 +12,39 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ThemeProvider, useTheme } from '@/hooks/useTheme';
+
+function AppContent() {
+    const { activeColors, theme } = useTheme();
+    
+    useEffect(() => {
+        // Hide splash screen only when the theme provider has fully resolved and UI is ready
+        SplashScreen.hideAsync();
+    }, []);
+
+    return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <Stack
+                screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: activeColors.background },
+                }}
+            >
+                <Stack.Screen name="index" />
+                <Stack.Screen name="quiz/[id]/index" />
+                <Stack.Screen name="quiz/[id]/play" />
+                <Stack.Screen name="quiz/[id]/result" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="weekly-summary" options={{ title: "This Week's Heart & Habits" }} />
+                <Stack.Screen name="reflections-list" options={{ title: "My Reflections" }} />
+                <Stack.Screen name="salah-tracker" />
+                <Stack.Screen name="today-plan/index" />
+                <Stack.Screen name="today-plan/summary" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="ask-my-day" />
+            </Stack>
+            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+        </GestureHandlerRootView>
+    );
+}
 
 // Ignore specific warnings that trigger unnecessary red boxes in Expo Go
 LogBox.ignoreLogs([
@@ -46,35 +79,23 @@ export default function RootLayout() {
 
         const initApp = async () => {
             try {
-                // Initialize database first
-                await initDatabase();
-                await openUserDataDb();
-                setIsDbReady(true);
+                // Initialize databases in parallel
+                await Promise.all([initDatabase(), openUserDataDb()]);
 
                 if (loaded) {
-                    // Initialize notifications (non-blocking)
-                    try {
-                        await notificationService.initialize();
-                    } catch (e) {
-                        console.warn("[RootLayout] Notification init failed:", e);
-                    }
-
-                    // Fonts loaded, now ensure auth
-                    await ensureAnonymousAuth();
-                    setIsAuthReady(true);
-
+                    // Run network/auth requests in the background (NON-BLOCKING)
+                    notificationService.initialize().catch(e => console.warn("[RootLayout] Notification init failed:", e));
+                    ensureAnonymousAuth().catch(e => console.warn("[RootLayout] Auth failed:", e));
+                    
                     // Start best-effort Firebase sync (outbox → Firestore)
                     syncCleanup = firebaseSyncService.startAutoSync();
-
-                    // Add a small delay so the branding is visible
-                    setTimeout(() => {
-                        SplashScreen.hideAsync();
-                    }, 1500);
                 }
             } catch (error) {
                 console.error("Initialization error:", error);
-                // Even on error, we might want to let the app load or show an error screen
-                setIsDbReady(true); 
+            } finally {
+                // Instantly unlock the UI to render and hide the splash screen
+                setIsDbReady(true);
+                setIsAuthReady(true);
             }
         };
         initApp();
@@ -94,25 +115,8 @@ export default function RootLayout() {
     }
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                    contentStyle: { backgroundColor: '#F3F4F6' },
-                }}
-            >
-                <Stack.Screen name="index" />
-                <Stack.Screen name="quiz/[id]/index" />
-                <Stack.Screen name="quiz/[id]/play" />
-                <Stack.Screen name="quiz/[id]/result" options={{ gestureEnabled: false }} />
-                <Stack.Screen name="weekly-summary" options={{ title: "This Week's Heart & Habits" }} />
-                <Stack.Screen name="reflections-list" options={{ title: "My Reflections" }} />
-                <Stack.Screen name="salah-tracker" />
-                <Stack.Screen name="today-plan/index" />
-                <Stack.Screen name="today-plan/summary" options={{ gestureEnabled: false }} />
-                <Stack.Screen name="ask-my-day" />
-            </Stack>
-            <StatusBar style="dark" />
-        </GestureHandlerRootView>
+        <ThemeProvider>
+            <AppContent />
+        </ThemeProvider>
     );
 }

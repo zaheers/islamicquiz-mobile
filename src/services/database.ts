@@ -27,31 +27,6 @@ export async function initDatabase(): Promise<void> {
       const fileInfo = await FileSystem.getInfoAsync(dbPath);
       
       let needsUpdate = false;
-      if (fileInfo.exists) {
-          try {
-              const checkDb = SQLite.openDatabaseSync(dbName);
-              // Check for words_json column
-              const tableInfo = checkDb.getAllSync<any>("PRAGMA table_info(ayahs)");
-              const hasWordsJson = tableInfo.some((col: any) => col.name === 'words_json');
-              
-              // NEW: Check for Bismillah (Ayah 0) in Surah 2 to ensure data update
-              const bismillahCheck = checkDb.getFirstSync<any>("SELECT 1 FROM ayahs WHERE surah_id = 2 AND ayah_number = 0");
-              const hasBismillah = !!bismillahCheck;
-
-              // NEW: Check for refined Arabic names (starting with سورة)
-              const firstSurah = checkDb.getFirstSync<any>("SELECT name FROM surahs WHERE id = 1");
-              const hasRefinedNames = firstSurah?.name?.startsWith("سورة");
-
-              checkDb.closeSync();
-              
-              if (!hasWordsJson || !hasBismillah || !hasRefinedNames) {
-                  if (__DEV__) console.log(`[Database] ${!hasWordsJson ? 'words_json missing' : (!hasBismillah ? 'Bismillah missing' : 'Names outdated')}, forcing update...`);
-                  needsUpdate = true;
-              }
-          } catch (e) {
-              console.warn("[Database] Update check failed, will verify file size:", e);
-          }
-      }
 
       const isSuspicious = fileInfo.exists && fileInfo.size < 10240;
 
@@ -73,7 +48,7 @@ export async function initDatabase(): Promise<void> {
       // Initialize the global DB instance once
       db = SQLite.openDatabaseSync(dbName);
       // Ensure Noor AI history table exists (app-level table, not in quran.db asset)
-      const { ensureNoorHistoryTable } = await import('./noorHistoryService');
+      const { ensureNoorHistoryTable } = require('./noorHistoryService');
       ensureNoorHistoryTable();
       if (__DEV__) console.log("[Database] Initialization complete.");
     } catch (error) {

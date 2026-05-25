@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, Platform
 import { useRouter } from 'expo-router';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { askNoor } from '@/services/noorApi';
 import { Send, ArrowLeft, MoreVertical, Sparkles, PlusCircle, Sun } from 'lucide-react-native';
@@ -23,6 +23,9 @@ interface AIBottomSheetProps {
 }
 
 export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottomSheetProps) {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const snapPoints = useMemo(() => ['95%'], []); 
@@ -62,7 +65,7 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
         if (!inputText.trim()) return;
 
         const text = inputText;
-        const newMessages = [...messages, { id: Date.now().toString(), type: 'user', text }];
+        const newMessages: Message[] = [...messages, { id: Date.now().toString(), type: 'user', text }];
         const typingId = (Date.now() + 1).toString();
         newMessages.push({ id: typingId, type: 'ai', isTyping: true });
         
@@ -274,7 +277,7 @@ export function AIBottomSheet({ bottomSheetRef, initialPrompt, topic }: AIBottom
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     sheetBackground: { backgroundColor: colors.sg.surface, borderRadius: 32 },
     indicator: { backgroundColor: colors.sg.outlineVariant, width: 48, height: 6, marginTop: 4 },
     

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { usePrayerTimes } from '@/features/salah/usePrayerTimes';
 import { PRAYER_DISPLAY } from '@/services/salahRepository';
@@ -26,6 +26,9 @@ const MiniWave = ({ color }: { color: string }) => (
 );
 
 export function SalahFluidWidget({ onPress }: { onPress?: () => void }) {
+  const { activeColors, theme } = useTheme();
+  const colors = { sg: activeColors };
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const { prayers, nextPrayer, loading } = usePrayerTimes();
   const router = useRouter();
 
@@ -56,11 +59,17 @@ export function SalahFluidWidget({ onPress }: { onPress?: () => void }) {
   }
 
   const nextDisplay = PRAYER_DISPLAY[nextPrayer.name];
+  
+  const gradientColors = (theme === 'dark' 
+    ? ['#1B4D3E', '#2E5A44'] 
+    : [colors.sg.primaryContainer, colors.sg.primary]) as [string, string];
+
+  const curveColor = theme === 'dark' ? '#2E5A44' : colors.sg.primary;
 
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.9} onPress={onPress}>
       <LinearGradient
-        colors={[colors.sg.primaryContainer, colors.sg.primary]} // Deep premium green from theme
+        colors={gradientColors}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -71,7 +80,7 @@ export function SalahFluidWidget({ onPress }: { onPress?: () => void }) {
         <Svg width={WIDGET_WIDTH} height="40" viewBox={`0 0 ${WIDGET_WIDTH} 40`} fill="none">
           <Path
             d={`M0 20 Q ${WIDGET_WIDTH / 2} 40 ${WIDGET_WIDTH} 20 L ${WIDGET_WIDTH} 40 L 0 40 Z`}
-            fill={colors.sg.primary} // Matches the bottom gradient color
+            fill={curveColor}
             opacity={0.6}
           />
         </Svg>
@@ -118,7 +127,7 @@ export function SalahFluidWidget({ onPress }: { onPress?: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     width: '100%',
     height: 160,

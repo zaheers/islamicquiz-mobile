@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 
 export function SpiritualCard({ children, style, featured }: ViewProps & { featured?: boolean }) {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     return (
         <View style={[styles.card, featured && styles.featuredCard, style]}>
             {children}
@@ -10,7 +13,7 @@ export function SpiritualCard({ children, style, featured }: ViewProps & { featu
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     card: {
         backgroundColor: colors.sg.surfaceContainerLowest,
         borderRadius: 16, // Organic shapes

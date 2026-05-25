@@ -2,17 +2,19 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
+import { useTheme } from '@/hooks/useTheme';
 import { QUIZ_CONFIG } from '@/lib/config/quizConfig';
 import { categories } from '@/lib/mockData';
-import { colors } from '@/theme/colors';
-import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
+import { spacing } from '@/theme/spacing';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function QuizStartScreen() {
-    const { id } = useLocalSearchParams();
+    const { colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+    const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
 
     const selectedCategory = categories.find(c => c.slug === id);
@@ -65,7 +67,7 @@ export default function QuizStartScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     center: {
         flex: 1,
         justifyContent: 'center',

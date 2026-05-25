@@ -9,7 +9,7 @@ import RenderHTML from 'react-native-render-html';
 import { Ayah, quranService, Surah } from '../services/quranService';
 import { storageService, Bookmark as BookmarkType, HistoryEntry } from '@/services/storageService';
 import { incrementDailyGoal } from '@/features/dailyGoal/useDailyGoal';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 
 const { width } = Dimensions.get('window');
@@ -26,27 +26,32 @@ const tajweedClassesStyles = {
     'tj-madd_6': { color: '#000EBC' },
 };
 
-const tajweedTagsStyles = {
-    span: { 
-        fontSize: 38, 
-        lineHeight: Platform.OS === 'ios' ? 70 : 85, 
-        textAlign: 'center', 
-        fontFamily: 'KFGQPCHafs',
-        color: '#121c2a'
-    }
-};
 
-const translitTagsStyles = {
-    body: {
-        color: '#404944',
-        fontSize: 16,
-        textAlign: 'center',
-        lineHeight: 24,
-        fontFamily: 'Manrope_400Regular',
-    }
-};
 
 export default function QuranReciterScreen() {
+    const { activeColors, colors, theme } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors, theme), [colors, theme]);
+
+    const tajweedTagsStyles = React.useMemo(() => ({
+        span: { 
+            fontSize: 38, 
+            lineHeight: Platform.OS === 'ios' ? 70 : 85, 
+            textAlign: 'center' as const, 
+            fontFamily: 'KFGQPCHafs',
+            color: colors.sg.onSurface
+        }
+    }), [colors]);
+
+    const translitTagsStyles = React.useMemo(() => ({
+        body: {
+            color: colors.sg.onSurfaceVariant,
+            fontSize: 16,
+            textAlign: 'center' as const,
+            lineHeight: 24,
+            fontFamily: 'Manrope_400Regular',
+        }
+    }), [colors]);
+
     const router = useRouter();
     const [surahs, setSurahs] = useState<Surah[]>([]);
     
@@ -428,11 +433,11 @@ export default function QuranReciterScreen() {
 
                 <View style={styles.footer} pointerEvents="box-none">
                     <View style={styles.player}>
-                        <TouchableOpacity onPress={handlePrevious} style={styles.playerBtn}><SkipBack size={24} color={colors.sg.onPrimary} /></TouchableOpacity>
+                        <TouchableOpacity onPress={handlePrevious} style={styles.playerBtn}><SkipBack size={24} color={theme === 'dark' ? colors.sg.onSurface : colors.sg.onPrimary} /></TouchableOpacity>
                         <TouchableOpacity onPress={togglePlay} style={styles.playBtn} disabled={isAudioLoading}>
                             {isAudioLoading ? <ActivityIndicator color={colors.sg.onSecondaryFixed} /> : isPlaying ? <Pause size={28} color={colors.sg.onSecondaryFixed} fill={colors.sg.onSecondaryFixed} /> : <Play size={28} color={colors.sg.onSecondaryFixed} fill={colors.sg.onSecondaryFixed} style={{ marginLeft: 4 }} />}
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={handleNext} style={styles.playerBtn}><SkipForward size={24} color={colors.sg.onPrimary} /></TouchableOpacity>
+                        <TouchableOpacity onPress={handleNext} style={styles.playerBtn}><SkipForward size={24} color={theme === 'dark' ? colors.sg.onSurface : colors.sg.onPrimary} /></TouchableOpacity>
                     </View>
                     <View style={styles.controls}>
                         <TouchableOpacity onPress={() => setShowNavModal(true)} style={styles.controlBtn}><Book size={20} color={colors.sg.primary} /></TouchableOpacity>
@@ -504,7 +509,7 @@ export default function QuranReciterScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any, theme: string) => StyleSheet.create({
     root: { flex: 1 },
     safeArea: { flex: 1, backgroundColor: colors.sg.background },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15, backgroundColor: colors.sg.background },
@@ -529,13 +534,13 @@ const styles = StyleSheet.create({
     wordHighlight: { backgroundColor: colors.sg.surfaceContainerHighest },
     transliterationBox: { marginBottom: 25, width: '100%', paddingHorizontal: 10 },
     translationBox: { width: '100%', borderTopWidth: 1, borderTopColor: colors.sg.surfaceContainerHigh, paddingTop: 25, marginTop: 5 },
-    translation: { ...typography.sg.spiritualText, color: colors.sg.onSurfaceVariant, textAlign: 'center', fontStyle: 'italic' },
+    translation: { ...typography.sg.spiritualText, color: colors.sg.onSurface, textAlign: 'center', fontStyle: 'italic' },
     bookmarkFab: { position: 'absolute', top: 90, left: 16, zIndex: 10, padding: 10, borderRadius: 25, backgroundColor: colors.sg.surfaceContainerLowest, elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
     memorizeFab: { position: 'absolute', top: 145, left: 16, zIndex: 10, padding: 10, borderRadius: 25, backgroundColor: colors.sg.surfaceContainerLowest, elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
     
     footer: { position: 'absolute', bottom: 30, width: '100%', alignItems: 'center' },
-    player: { width: '85%', height: 75, backgroundColor: colors.sg.primary, borderRadius: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', elevation: 15, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-    playBtn: { width: 58, height: 58, backgroundColor: colors.sg.secondaryContainer, borderRadius: 29, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 10, elevation: 5 },
+    player: { width: '85%', height: 75, backgroundColor: theme === 'dark' ? colors.sg.surfaceContainerHighest : colors.sg.primary, borderRadius: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', elevation: 15, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    playBtn: { width: 58, height: 58, backgroundColor: theme === 'dark' ? colors.sg.primary : colors.sg.secondaryContainer, borderRadius: 29, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 10, elevation: 5 },
     playerBtn: { padding: 15 },
     controls: { flexDirection: 'row', gap: 15, marginTop: 20, backgroundColor: colors.sg.surfaceContainerLowest, padding: 10, borderRadius: 30, elevation: 5, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 10, borderWidth: 1, borderColor: colors.sg.surfaceContainerHigh },
     controlBtn: { padding: 10, borderRadius: 20 },

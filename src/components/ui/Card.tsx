@@ -1,4 +1,4 @@
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { borderRadius, spacing } from '@/theme/spacing';
 import React from 'react';
 import { Pressable, StyleSheet, View, ViewProps } from 'react-native';
@@ -15,6 +15,9 @@ export const Card: React.FC<CardProps> = ({
     variant = 'elevated',
     ...props
 }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const containerStyles = [
         styles.card,
         variant === 'elevated' && styles.elevated,
@@ -41,7 +44,7 @@ export const Card: React.FC<CardProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     card: {
         backgroundColor: colors.surface,
         borderRadius: borderRadius.l,

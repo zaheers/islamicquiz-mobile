@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,6 +9,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function QuizResultScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const { id, score, total } = useLocalSearchParams();
     const router = useRouter();
 
@@ -54,7 +57,7 @@ export default function QuizResultScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     content: {
         flex: 1,
         padding: spacing.l,

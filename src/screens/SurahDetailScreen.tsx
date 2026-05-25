@@ -20,7 +20,7 @@ import {
 import { ChevronLeft, Play, Pause, BookOpen } from 'lucide-react-native';
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { quranService } from '../services/quranService';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { SpiritualCard } from '@/components/ui/SpiritualCard';
@@ -28,6 +28,9 @@ import { SpiritualCard } from '@/components/ui/SpiritualCard';
 const PAD = (n: number) => n.toString().padStart(3, '0');
 
 export const SurahDetailScreen = ({ route, navigation }: any) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const { verse, tafsir } = route.params;
 
   const [ayahData, setAyahData] = useState<any>(null);
@@ -252,7 +255,7 @@ export const SurahDetailScreen = ({ route, navigation }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.sg.background,

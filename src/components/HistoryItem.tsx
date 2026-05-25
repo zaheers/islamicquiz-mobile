@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from './ui/Card';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { ChevronRight } from 'lucide-react-native';
@@ -17,6 +17,9 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   date,
   onPress,
 }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Card style={styles.container} onPress={onPress}>
       <View style={styles.content}>
@@ -32,7 +35,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     marginBottom: spacing.s,
     padding: spacing.m,

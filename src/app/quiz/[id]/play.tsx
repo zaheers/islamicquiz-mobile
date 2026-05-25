@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { useQuizStore } from '@/state/quizStore';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -13,6 +13,9 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function QuizPlayScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const { id } = useLocalSearchParams();
     const router = useRouter();
 
@@ -142,7 +145,7 @@ export default function QuizPlayScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     center: {
         flex: 1,
         justifyContent: 'center',

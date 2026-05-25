@@ -44,10 +44,15 @@ export const typography = {
     sg: {
         headlineLgMobile: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 28, lineHeight: 36, fontWeight: '400' as '400' },
         headlineLg: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 32, lineHeight: 40, fontWeight: '400' as '400' },
+        headlineMd: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 26, lineHeight: 32, fontWeight: '400' as '400' },
         displayLg: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 48, lineHeight: 56, letterSpacing: -0.96, fontWeight: '400' as '400' },
+        titleLg: { fontFamily: 'Manrope_600SemiBold', fontSize: 22, lineHeight: 28, fontWeight: '600' as '600' },
+        titleMd: { fontFamily: 'Manrope_600SemiBold', fontSize: 18, lineHeight: 24, fontWeight: '600' as '600' },
         spiritualText: { fontFamily: 'LibreCaslonText_400Regular', fontSize: 20, lineHeight: 32, fontWeight: '400' as '400' },
+        labelLg: { fontFamily: 'Manrope_600SemiBold', fontSize: 16, lineHeight: 24, letterSpacing: 0.5, fontWeight: '600' as '600' },
         labelMd: { fontFamily: 'Manrope_600SemiBold', fontSize: 14, lineHeight: 20, letterSpacing: 0.7, fontWeight: '600' as '600' },
         bodyLg: { fontFamily: 'Manrope_400Regular', fontSize: 18, lineHeight: 28, fontWeight: '400' as '400' },
-        bodyMd: { fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 24, fontWeight: '400' as '400' }
+        bodyMd: { fontFamily: 'Manrope_400Regular', fontSize: 16, lineHeight: 24, fontWeight: '400' as '400' },
+        bodySm: { fontFamily: 'Manrope_400Regular', fontSize: 14, lineHeight: 20, fontWeight: '400' as '400' }
     }
 };

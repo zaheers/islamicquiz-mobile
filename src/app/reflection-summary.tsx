@@ -4,12 +4,15 @@ import { Audio } from 'expo-av';
 import { journalService } from '@/services/journalService';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { ArrowLeft, Edit3, Heart, Share2, Headphones, Edit } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ReflectionSummaryScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const { verseText, verseRef, aiInsight } = useLocalSearchParams<{ verseText: string, verseRef: string, aiInsight: string }>();
@@ -207,10 +210,10 @@ export default function ReflectionSummaryScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F2ED',
+        backgroundColor: colors.sg.background,
     },
     bgBlobTop: {
         position: 'absolute',

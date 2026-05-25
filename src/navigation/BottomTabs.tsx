@@ -4,12 +4,15 @@ import { AskScreen } from '../screens/AskScreen';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { MessageSquare, Clock, Settings } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
-export const BottomTabs = () => {
+export const BottomTabs = ({ route }: any) => {
+    const { activeColors, colors } = useTheme();
+    const initialQuery = route?.params?.initialQuery;
+
   const insets = useSafeAreaInsets();
   // Give 12px breathing room above the OS nav bar
   const tabBarHeight = 56 + Math.max(insets.bottom, 12);
@@ -34,6 +37,7 @@ export const BottomTabs = () => {
       <Tab.Screen
         name="AskTab"
         component={AskScreen}
+        initialParams={initialQuery ? { query: initialQuery } : undefined}
         options={{
           tabBarLabel: 'Ask',
           tabBarIcon: ({ color, size }) => (

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, PanResponder, LayoutChangeEvent } from 'react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import * as Haptics from 'expo-haptics';
 
@@ -10,6 +10,9 @@ interface KhushuSliderProps {
 }
 
 export const KhushuSlider: React.FC<KhushuSliderProps> = ({ value, onValueChange }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const [trackWidth, setTrackWidth] = useState(0);
     const thumbRadius = 14;
     
@@ -107,7 +110,7 @@ export const KhushuSlider: React.FC<KhushuSliderProps> = ({ value, onValueChange
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         marginVertical: 12,
         padding: 16,

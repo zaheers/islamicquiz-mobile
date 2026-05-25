@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { QuestionCard } from '../components/QuestionCard';
@@ -12,6 +12,9 @@ import { saveNoorHistory } from '../services/noorHistoryService';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 
 export const AnswerScreen = ({ route, navigation }: any) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const { question, result } = route.params;
 
   useEffect(() => {
@@ -121,7 +124,7 @@ export const AnswerScreen = ({ route, navigation }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.sg.background,

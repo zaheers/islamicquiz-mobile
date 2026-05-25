@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SpiritualCard } from './ui/SpiritualCard';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { BookOpen, ChevronRight } from 'lucide-react-native';
@@ -21,6 +21,9 @@ export const SurahReferenceCard: React.FC<SurahReferenceCardProps> = ({
   referenceCount,
   onPress,
 }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const displayName = surahName.toLowerCase().startsWith('surah') 
     ? surahName 
     : `Surah ${surahName}`;
@@ -47,7 +50,7 @@ export const SurahReferenceCard: React.FC<SurahReferenceCardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     marginBottom: spacing.s,
   },

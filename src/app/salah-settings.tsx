@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, ScrollView } from 'react-native';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, MapPin, Search, Check } from 'lucide-react-native';
@@ -17,6 +17,9 @@ const CALC_METHODS: { key: CalcMethodKey; label: string; desc: string }[] = [
 ];
 
 export default function SalahSettingsScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const router = useRouter();
   const [settings, setSettings] = useState<SalahSettings | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -181,7 +184,7 @@ export default function SalahSettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.sg.background,

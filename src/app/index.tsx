@@ -6,7 +6,7 @@ import { storageService } from '@/services/storageService';
 import { AyahOfDayCard } from '@/features/ayahOfDay/AyahOfDayCard';
 import { useAyahOfDay } from '@/features/ayahOfDay/useAyahOfDay';
 import { useDailyGoal } from '@/features/dailyGoal/useDailyGoal';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,26 +17,45 @@ import { AIBottomSheet } from '@/components/ui/AIBottomSheet';
 import { SalahBottomSheet } from '@/components/ui/SalahBottomSheet';
 import { SalahFluidWidget } from '@/components/ui/SalahFluidWidget';
 import { adhanNotificationService } from '@/services/adhanNotificationService';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-
 export default function HomeScreen() {
+    const { activeColors, theme } = useTheme();
+    const colors = { sg: activeColors }; // Shim for inline usage
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'Home' | 'Quiz' | 'AI'>('Home');
 
-    const now = new Date();
-    const hijriDate = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
-    }).format(now).toUpperCase();
-    const englishDate = new Intl.DateTimeFormat('en-US', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    }).format(now);
+    const [hijriDate, setHijriDate] = useState<string>('');
+    const [englishDate, setEnglishDate] = useState<string>('');
+
+    useEffect(() => {
+        const now = new Date();
+        try {
+            const hijri = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            }).format(now).toUpperCase();
+            setHijriDate(hijri);
+        } catch (e) {
+            setHijriDate('');
+        }
+        
+        try {
+            const english = new Intl.DateTimeFormat('en-US', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(now);
+            setEnglishDate(english);
+        } catch (e) {
+            setEnglishDate('');
+        }
+    }, []);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const salahSheetRef = useRef<BottomSheet>(null);
@@ -114,9 +133,11 @@ export default function HomeScreen() {
                     style={styles.heroImage}
                     contentFit="cover"
                 />
-                {/* Dark gradient overlay for text readability */}
                 <LinearGradient
-                    colors={['rgba(0,0,0,0.25)', 'rgba(0,0,0,0.35)', 'rgba(255,255,255,0.7)', colors.sg.background]}
+                    colors={theme === 'dark' 
+                        ? ['rgba(0,0,0,0.4)', 'rgba(0,0,0,0.6)', 'rgba(19,28,40,0.9)', colors.sg.background]
+                        : ['rgba(0,0,0,0.25)', 'rgba(0,0,0,0.35)', 'rgba(255,255,255,0.7)', colors.sg.background]
+                    }
                     locations={[0, 0.4, 0.8, 1]}
                     style={styles.heroOverlay}
                 />
@@ -207,19 +228,19 @@ export default function HomeScreen() {
                         <Text style={[styles.sectionHeading, { marginBottom: 16, marginTop: 16 }]}>Daily Progress</Text>
                         <View style={styles.progressGrid}>
                             <TouchableOpacity style={styles.progressCard} onPress={() => router.push('/today-plan' as any)}>
-                                <Target size={20} color={colors.sg.primary} />
+                                <Target size={20} color={colors.sg.secondary} />
                                 <Text style={styles.progressCardTitle}>Daily Goal</Text>
                                 <Text style={styles.progressCardValue}>{dailyGoalState.progress}/{dailyGoalState.goal}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity style={styles.progressCard} onPress={() => salahSheetRef.current?.expand()}>
-                                <HeartPulse size={20} color={colors.sg.primary} />
+                                <HeartPulse size={20} color={colors.sg.secondary} />
                                 <Text style={styles.progressCardTitle}>Salah</Text>
                                 <Text style={styles.progressCardValue}>Track</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity style={styles.progressCard} onPress={() => router.push('/quran-reciter')}>
-                                <BookOpen size={20} color={colors.sg.primary} />
+                                <BookOpen size={20} color={colors.sg.secondary} />
                                 <Text style={styles.progressCardTitle}>Reading</Text>
                                 <Text style={styles.progressCardValue} numberOfLines={1}>{lastReadSurahName || 'Al-Fatihah'}</Text>
                             </TouchableOpacity>
@@ -230,13 +251,17 @@ export default function HomeScreen() {
 
                         {/* Mindful Reflection */}
                         <Text style={[styles.sectionHeading, { marginBottom: 16, marginTop: 48 }]}>Mindful Moment</Text>
-                        <TouchableOpacity onPress={() => router.push('/ask-my-day' as any)} activeOpacity={0.9}>
-                            <SpiritualCard style={styles.reflectionCard}>
-                                <HelpCircle size={32} color={colors.sg.primary} style={{ marginBottom: 16 }} />
-                                <Text style={styles.reflectionTitle}>Ask About My Day</Text>
-                                <Text style={styles.reflectionText}>Take a moment to reflect and receive Quranic guidance tailored to how you feel right now.</Text>
-                            </SpiritualCard>
-                        </TouchableOpacity>
+                        <SpiritualCard style={[styles.reflectionCard, { paddingBottom: 24 }]}>
+                            <HelpCircle size={32} color={colors.sg.secondary} style={{ marginBottom: 16 }} />
+                            <Text style={styles.reflectionTitle}>Ask About My Day</Text>
+                            <Text style={[styles.reflectionText, { marginBottom: 24 }]}>Take a moment to reflect and receive Quranic guidance tailored to how you feel right now.</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow} style={{ marginHorizontal: -16, paddingHorizontal: 16, width: '100%' }}>
+                                <TouchableOpacity style={styles.chip} onPress={() => openAiSheet('Grateful', '☀️ Grateful')}><Text style={styles.chipText}>☀️ Grateful</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.chip} onPress={() => openAiSheet('Restless', '🍃 Restless')}><Text style={styles.chipText}>🍃 Restless</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.chip} onPress={() => openAiSheet('Anxious', '🌧️ Anxious')}><Text style={styles.chipText}>🌧️ Anxious</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.chip} onPress={() => openAiSheet('Peaceful', '🕊️ Peaceful')}><Text style={styles.chipText}>🕊️ Peaceful</Text></TouchableOpacity>
+                            </ScrollView>
+                        </SpiritualCard>
                         
                     </View>
                 )}
@@ -272,13 +297,13 @@ export default function HomeScreen() {
                                 Ask about the Quran and Islam.
                             </Text>
                             <View style={styles.btnCol}>
-                                <TouchableOpacity style={styles.fullBtn} onPress={() => openAiSheet('What does Quran say about patience?', 'Quranic Wisdom')}>
+                                <TouchableOpacity style={styles.fullBtn} onPress={() => router.push({ pathname: '/noor-ai', params: { query: 'What does Quran say about patience?' } })}>
                                     <Text style={styles.fullBtnText}>What does Quran say about patience?</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.fullBtn} onPress={() => openAiSheet('Explain charity in Islam', 'Islamic Knowledge')}>
+                                <TouchableOpacity style={styles.fullBtn} onPress={() => router.push({ pathname: '/noor-ai', params: { query: 'Explain charity in Islam' } })}>
                                     <Text style={styles.fullBtnText}>Explain charity in Islam</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.fullBtn} onPress={() => openAiSheet('Tell me about Prophet Musa', 'Prophets')}>
+                                <TouchableOpacity style={styles.fullBtn} onPress={() => router.push({ pathname: '/noor-ai', params: { query: 'Tell me about Prophet Musa' } })}>
                                     <Text style={styles.fullBtnText}>Tell me about Prophet Musa</Text>
                                 </TouchableOpacity>
                             </View>
@@ -347,7 +372,7 @@ export default function HomeScreen() {
 
 const { width, height } = Dimensions.get('window');
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     screen: {
         backgroundColor: colors.sg.background,
         flex: 1,
@@ -482,7 +507,7 @@ const styles = StyleSheet.create({
     actionText: {
         ...typography.sg.labelMd,
         fontSize: 12,
-        color: colors.sg.primary,
+        color: colors.sg.secondary,
         marginTop: 8,
     },
     progressSectionTitle: {
@@ -510,13 +535,13 @@ const styles = StyleSheet.create({
     },
     progressBarFill: {
         height: '100%',
-        backgroundColor: colors.sg.primary,
+        backgroundColor: colors.sg.secondary,
         borderRadius: 3,
     },
     arabicReflection: {
         fontFamily: 'KFGQPCHafs',
         fontSize: 24,
-        color: colors.sg.primary, // deeper teal
+        color: colors.sg.secondary, // deeper teal
         textAlign: 'right',
         marginBottom: 8,
         lineHeight: 38,
@@ -620,14 +645,14 @@ const styles = StyleSheet.create({
     },
     aiCardSubLabel: { 
         ...typography.sg.labelMd, 
-        color: colors.sg.primary, 
+        color: colors.sg.secondary, 
         textTransform: 'uppercase', 
         letterSpacing: 1.5, 
         marginBottom: 4 
     },
     aiCardTitle: { 
         ...typography.sg.headlineLg, 
-        color: colors.sg.primary, 
+        color: colors.sg.secondary, 
         fontSize: 28 
     },
     aiCardDesc: { 
@@ -649,7 +674,7 @@ const styles = StyleSheet.create({
     },
     chipText: { 
         ...typography.sg.labelMd, 
-        color: colors.sg.primary 
+        color: colors.sg.onSurface 
     },
     btnCol: { 
         flexDirection: 'column', 
@@ -666,7 +691,7 @@ const styles = StyleSheet.create({
     },
     fullBtnText: { 
         ...typography.sg.labelMd, 
-        color: colors.sg.primary, 
+        color: colors.sg.onSurface, 
         fontSize: 16 
     },
     statsRow: { 
@@ -684,7 +709,7 @@ const styles = StyleSheet.create({
     },
     statNum: { 
         ...typography.sg.headlineLg, 
-        color: colors.sg.primary, 
+        color: colors.sg.secondary, 
         fontSize: 24, 
         fontWeight: 'bold' 
     },

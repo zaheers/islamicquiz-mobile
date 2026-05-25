@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Clock, ChevronRight, X, Trash2 } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { useFocusEffect } from '@react-navigation/native';
@@ -10,6 +10,9 @@ import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { SpiritualCard } from '@/components/ui/SpiritualCard';
 
 export const HistoryScreen = ({ navigation }: any) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const [history, setHistory] = useState<NoorHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<NoorHistoryItem | null>(null);
@@ -136,7 +139,7 @@ export const HistoryScreen = ({ navigation }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.sg.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 

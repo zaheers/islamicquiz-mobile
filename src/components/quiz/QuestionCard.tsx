@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Question } from '@/lib/types';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import React from 'react';
@@ -20,8 +20,22 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     onSelectOption,
     showResult = false
 }) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
 
-    // We compute styles dynamically for strict "Green/Red" highlighting
+    const getOptionTextStyle = (option: string) => {
+        if (!selectedOption) return { color: colors.text };
+
+        if (showResult) {
+            if (option === question.answer) return { color: colors.success };
+            if (option === selectedOption && option !== question.answer) return { color: colors.error };
+            return { color: colors.textSecondary };
+        }
+
+        if (selectedOption === option) return { color: colors.text };
+
+        return { color: colors.text };
+    };
     const getOptionStyle = (option: string) => {
         if (!selectedOption) return {}; // Default state
 
@@ -83,6 +97,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                             styles.optionButton,
                             getOptionStyle(option)
                         ]}
+                        textStyle={getOptionTextStyle(option)}
                     />
                 ))}
             </View>
@@ -97,7 +112,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         gap: spacing.l,
     },
@@ -128,7 +143,7 @@ const styles = StyleSheet.create({
     },
     explanationTitle: {
         ...typography.h3,
-        color: colors.primaryDark,
+        color: colors.sg?.secondary || colors.text,
         marginBottom: spacing.s,
     },
     explanationText: {

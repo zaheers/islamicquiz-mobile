@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Mic } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { SuggestedQuestionCard } from '../components/SuggestedQuestionCard';
@@ -15,9 +15,21 @@ const SUGGESTED_QUESTIONS = [
   'What is the meaning of Surah Al-Ikhlas?',
 ];
 
-export const AskScreen = ({ navigation }: any) => {
-  const [question, setQuestion] = useState('');
+export const AskScreen = ({ route, navigation }: any) => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
+  const initialQuery = route?.params?.query || '';
+  const [question, setQuestion] = useState(initialQuery);
   const [isLoading, setIsLoading] = useState(false);
+  const autoAskTriggered = useRef(false);
+
+  useEffect(() => {
+    if (initialQuery && !autoAskTriggered.current) {
+      autoAskTriggered.current = true;
+      handleAsk(initialQuery);
+    }
+  }, [initialQuery]);
 
   const handleAsk = async (q: string) => {
     const query = q || question;
@@ -82,7 +94,7 @@ export const AskScreen = ({ navigation }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.sg.background,

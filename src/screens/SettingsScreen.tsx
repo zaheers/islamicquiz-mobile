@@ -9,7 +9,7 @@ import {
   Switch,
   ScrollView,
 } from 'react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { SpiritualCard } from '../components/ui/SpiritualCard';
@@ -21,6 +21,9 @@ import { notificationService } from '../services/notificationService';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 
 export const SettingsScreen = () => {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const [settings, setSettings] = useState<UserGoalSettings | null>(null);
   const [targetValueStr, setTargetValueStr] = useState('10');
   const [hourStr, setHourStr] = useState('08');
@@ -215,7 +218,7 @@ export const SettingsScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.sg.background,

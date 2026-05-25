@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useRouter } from 'expo-router';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { quranService, Ayah, Surah } from '@/services/quranService';
 import { storageService } from '@/services/storageService';
@@ -36,6 +36,8 @@ const tajweedTagsStyles = {
 };
 
 export default function GuidedSessionScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [surah, setSurah] = useState<Surah | null>(null);
@@ -177,7 +179,7 @@ export default function GuidedSessionScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',

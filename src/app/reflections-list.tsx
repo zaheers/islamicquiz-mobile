@@ -3,13 +3,16 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-nat
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { SpiritualCard } from '@/components/ui/SpiritualCard';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { spacing } from '@/theme/spacing';
 import { reflectionRepository, Reflection } from '@/services/reflectionRepository';
 import { HeartPulse } from 'lucide-react-native';
 
 export default function ReflectionsListScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const [reflections, setReflections] = useState<Reflection[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -77,7 +80,7 @@ export default function ReflectionsListScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.sg.background },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     scrollContent: { padding: spacing.l, paddingBottom: spacing.xxl * 2, gap: 16 },

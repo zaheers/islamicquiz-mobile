@@ -11,7 +11,7 @@ import {
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { SpiritualCard } from '@/components/ui/SpiritualCard';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { spacing } from '@/theme/spacing';
 import { Check, X, Minus, Star, ChevronDown, ChevronUp, Lock, Sun, Moon, Sparkles, Clock, CheckCircle2 } from 'lucide-react-native';
@@ -32,6 +32,9 @@ const { width } = Dimensions.get('window');
 const getUserId = () => auth?.currentUser?.uid || 'anonymous_user';
 
 export default function SalahTrackerScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const [entries, setEntries] = useState<SalahDayEntry[]>([]);
   const [streaks, setStreaks] = useState<SalahStreak[]>([]);
   const [history, setHistory] = useState<Record<string, SalahDayEntry[]>>({});
@@ -358,7 +361,7 @@ export default function SalahTrackerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.sg.background,

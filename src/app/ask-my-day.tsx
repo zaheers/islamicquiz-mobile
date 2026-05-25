@@ -2,19 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { askNoor } from '@/services/noorApi';
 import { Sparkles, Sun, Droplets, Cloud, Send, Brain, ArrowLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-const MOODS = [
-    { label: 'Grateful', icon: Sun, color: colors.sg.secondary },
-    { label: 'Reflective', icon: Sparkles, color: colors.sg.primary },
-    { label: 'Peaceful', icon: Droplets, color: colors.sg.secondary },
-    { label: 'Anxious', icon: Cloud, color: colors.sg.outline }
-];
-
+// MOODS will be defined inside the component to access dynamic colors
 interface Message {
     id: string;
     type: 'ai' | 'user' | 'system';
@@ -24,6 +18,16 @@ interface Message {
 }
 
 export default function AskMyDayScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
+    const MOODS = React.useMemo(() => [
+        { label: 'Grateful', icon: Sun, color: colors.sg.secondary },
+        { label: 'Reflective', icon: Sparkles, color: colors.sg.secondary },
+        { label: 'Peaceful', icon: Droplets, color: colors.sg.secondary },
+        { label: 'Anxious', icon: Cloud, color: colors.sg.outline }
+    ], [colors]);
+
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [messages, setMessages] = useState<Message[]>([
@@ -79,10 +83,10 @@ export default function AskMyDayScreen() {
         <ScreenContainer style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
-                    <ArrowLeft size={24} color={colors.sg.primary} />
+                    <ArrowLeft size={24} color={colors.sg.secondary} />
                 </TouchableOpacity>
                 <View style={styles.headerTitle}>
-                    <Sparkles size={20} color={colors.sg.primary} style={{ marginRight: 8 }} />
+                    <Sparkles size={20} color={colors.sg.secondary} style={{ marginRight: 8 }} />
                     <Text style={styles.headerText}>Al-Noor</Text>
                 </View>
                 <View style={styles.placeholder} />
@@ -191,17 +195,17 @@ export default function AskMyDayScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.sg.background },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15 },
     iconBtn: { padding: 10, borderRadius: 14 },
     headerTitle: { flexDirection: 'row', alignItems: 'center' },
-    headerText: { ...typography.sg.headlineLgMobile, color: colors.sg.primary },
+    headerText: { ...typography.sg.headlineLgMobile, color: colors.sg.secondary },
     placeholder: { width: 44 },
     keyboardAvoid: { flex: 1 },
     scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
     introSection: { alignItems: 'center', marginTop: 20, marginBottom: 30 },
-    introTitle: { ...typography.sg.headlineLg, color: colors.sg.primary, textAlign: 'center', marginBottom: 8 },
+    introTitle: { ...typography.sg.headlineLg, color: colors.sg.secondary, textAlign: 'center', marginBottom: 8 },
     introSubtitle: { ...typography.sg.bodyMd, color: colors.sg.onSurfaceVariant, textAlign: 'center' },
     moodGrid: { paddingBottom: 10, marginBottom: 20, gap: 12 },
     moodBtn: { alignItems: 'center', padding: 16, borderRadius: 16, backgroundColor: colors.sg.surfaceContainerLowest, borderWidth: 2, borderColor: 'transparent', minWidth: 90 },
@@ -223,8 +227,8 @@ const styles = StyleSheet.create({
     aiText: { ...typography.sg.bodyMd, color: colors.sg.onSurface },
     aiTextItalic: { ...typography.sg.bodyMd, color: colors.sg.onSurfaceVariant, fontStyle: 'italic' },
     verseBox: { marginBottom: 15 },
-    verseArabic: { fontFamily: 'KFGQPCHafs', fontSize: 24, color: colors.sg.primary, textAlign: 'right', marginBottom: 10 },
-    verseTranslation: { ...typography.sg.spiritualText, color: colors.sg.primary, fontStyle: 'italic', marginBottom: 5 },
+    verseArabic: { fontFamily: 'KFGQPCHafs', fontSize: 24, color: colors.sg.secondary, textAlign: 'right', marginBottom: 10 },
+    verseTranslation: { ...typography.sg.spiritualText, color: colors.sg.secondary, fontStyle: 'italic', marginBottom: 5 },
     verseRef: { ...typography.sg.labelMd, fontSize: 12, color: colors.sg.secondary, textAlign: 'right' },
     adviceBox: { backgroundColor: 'rgba(255,255,255,0.5)', borderLeftWidth: 4, borderLeftColor: colors.sg.secondary, padding: 12, borderTopRightRadius: 8, borderBottomRightRadius: 8 },
     adviceTitle: { ...typography.sg.labelMd, fontSize: 11, color: colors.sg.secondary, marginBottom: 4 },

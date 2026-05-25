@@ -128,7 +128,7 @@ export const adhanNotificationService = {
                 data: { screen: 'salah-tracker' },
                 ...(Platform.OS === 'android' ? { channelId: 'default' } : {}),
               },
-              trigger: prayer.time,
+              trigger: { date: prayer.time } as any,
             });
             scheduledCount++;
           }

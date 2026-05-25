@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { Check, X, ChevronRight } from 'lucide-react-native';
 import { auth } from '@/lib/firebase';
@@ -19,6 +19,9 @@ interface SalahBottomSheetProps {
 }
 
 export function SalahBottomSheet({ bottomSheetRef, onProgressUpdate }: SalahBottomSheetProps) {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const router = useRouter();
     const snapPoints = useMemo(() => ['70%', '90%'], []);
     const [entries, setEntries] = useState<SalahDayEntry[]>([]);
@@ -162,7 +165,7 @@ export function SalahBottomSheet({ bottomSheetRef, onProgressUpdate }: SalahBott
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     sheetBackground: {
         backgroundColor: colors.sg.surface,
         borderRadius: 28,

@@ -3,12 +3,15 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput } 
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { Header } from '@/components/ui/Header';
 import { typography } from '@/theme/typography';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { Sun, Cloud, Heart, Book, ChevronRight, Plus, X } from 'lucide-react-native';
 import { journalService, JournalEntry } from '@/services/journalService';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function JournalHistoryScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [stats, setStats] = useState({ total: 0, streak: 0 });
     const [isModalVisible, setModalVisible] = useState(false);
@@ -199,7 +202,7 @@ export default function JournalHistoryScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     screen: {
         backgroundColor: colors.sg.background,
     },

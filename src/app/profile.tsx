@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { colors } from '@/theme/colors';
+// Import colors for typing if needed, but we use activeColors for rendering
+import { colors as staticColors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { typography } from '@/theme/typography';
 import { Card } from '@/components/ui/Card';
@@ -22,6 +23,7 @@ import { useRouter } from 'expo-router';
 import { goalRepository, UserGoalSettings, GoalType } from '@/services/goalRepository';
 import { auth } from '@/lib/firebase';
 import { notificationService } from '@/services/notificationService';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -29,6 +31,9 @@ export default function ProfileScreen() {
   const [targetValueStr, setTargetValueStr] = useState('10');
   const [hourStr, setHourStr] = useState('08');
   const [minuteStr, setMinuteStr] = useState('00');
+  
+  const { themeMode, setThemeMode, colors } = useTheme();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -88,6 +93,31 @@ export default function ProfileScreen() {
       <Header title="Profile & Settings" showBack />
 
       <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.sectionHeading}>App Theme</Text>
+        <Card style={styles.section}>
+          <View style={styles.settingsRow}>
+            <View style={styles.settingsIcon}>
+              <Target size={20} color={colors.primary} />
+            </View>
+            <View style={styles.settingsBody}>
+              <Text style={styles.settingsLabel}>Display Mode</Text>
+              <View style={styles.segmentedControl}>
+                {(['light', 'dark', 'midnight'] as const).map((mode) => (
+                  <TouchableOpacity
+                    key={mode}
+                    style={[styles.segment, themeMode === mode && styles.segmentActive]}
+                    onPress={() => setThemeMode(mode)}
+                  >
+                    <Text style={[styles.segmentText, themeMode === mode && styles.segmentTextActive]}>
+                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </View>
+        </Card>
+
         <Text style={styles.sectionHeading}>Daily Goal</Text>
         <Card style={styles.section}>
           <View style={styles.settingsRow}>
@@ -259,10 +289,10 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.background || colors.sg?.background || '#F3F4F6',
   },
   content: {
     padding: spacing.m,
@@ -285,7 +315,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: spacing.l,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.border || '#F3F4F6',
   },
   settingsBodyRow: {
     flex: 1,
@@ -312,11 +342,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
-    backgroundColor: '#F9FAFB',
+    color: colors.text,
+    backgroundColor: colors.sg?.surfaceContainerLow || '#F9FAFB',
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.sg?.surfaceContainer || '#F3F4F6',
     borderRadius: 8,
     padding: 4,
   },
@@ -327,7 +358,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   segmentActive: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.sg?.surfaceContainerLowest || '#ffffff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,

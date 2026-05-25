@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
 import { SpiritualCard } from '@/components/ui/SpiritualCard';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { typography } from '@/theme/typography';
 import { spacing } from '@/theme/spacing';
 import { weeklySummaryService, WeeklySummary } from '@/services/weeklySummaryService';
@@ -11,6 +11,9 @@ import { BookOpen, HeartPulse, Activity } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export default function WeeklySummaryScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const router = useRouter();
     const [summary, setSummary] = useState<WeeklySummary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -111,7 +114,7 @@ export default function WeeklySummaryScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.sg.background },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     scrollContent: { padding: spacing.l, paddingBottom: spacing.xxl * 2, gap: 16 },

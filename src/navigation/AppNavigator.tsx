@@ -7,7 +7,7 @@ import { SurahDetailScreen } from '../screens/SurahDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
-export const AppNavigator = () => {
+export const AppNavigator = ({ initialQuery }: { initialQuery?: string }) => {
   return (
     <NavigationIndependentTree>
       <NavigationContainer>
@@ -17,7 +17,11 @@ export const AppNavigator = () => {
             headerShown: false,
           }}
         >
-          <Stack.Screen name="Main" component={BottomTabs} />
+          <Stack.Screen 
+            name="Main" 
+            component={BottomTabs} 
+            initialParams={initialQuery ? { initialQuery } : undefined} 
+          />
           <Stack.Screen name="Answer" component={AnswerScreen} />
           <Stack.Screen name="SurahDetail" component={SurahDetailScreen} />
         </Stack.Navigator>

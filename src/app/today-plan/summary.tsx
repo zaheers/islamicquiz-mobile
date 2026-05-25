@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Header } from '@/components/ui/Header';
 import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { spacing } from '@/theme/spacing';
 import { CheckCircle, Home, Flame } from 'lucide-react-native';
 import { storageService } from '@/services/storageService';
@@ -15,6 +15,9 @@ const { width } = Dimensions.get('window');
 const getUserId = () => auth?.currentUser?.uid || 'anonymous_user';
 
 export default function SessionSummaryScreen() {
+    const { activeColors, colors } = useTheme();
+    const styles = React.useMemo(() => createStyles(colors), [colors]);
+
     const router = useRouter();
     const params = useLocalSearchParams();
     const { surahNumber, surahName, lastReadAyah, ayahsReadCount, isReview } = params;
@@ -121,7 +124,7 @@ export default function SessionSummaryScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
